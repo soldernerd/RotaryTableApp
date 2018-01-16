@@ -1,0 +1,144 @@
+﻿<Window x:Class="RotaryTable.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:RotaryTable"
+        mc:Ignorable="d"
+        Title="Rotary Table"
+        SizeToContent="WidthAndHeight"
+        Closing="WindowClose"
+        WindowState="Normal"
+        ResizeMode="CanMinimize"
+        Left="{Binding WindowPositionX, Mode=TwoWay}"
+        Top="{Binding WindowPositionY, Mode=TwoWay}">
+
+    <Window.DataContext>
+        <StaticResourceExtension ResourceKey="CommunicatorVM"/>
+    </Window.DataContext>
+
+    <Grid Width="Auto" HorizontalAlignment="Left" VerticalAlignment="Top">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="180" />
+            <ColumnDefinition Width="180" />
+            <ColumnDefinition Width="180" />
+
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="20" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- Row 0: Main Menu -->
+        <Menu IsMainMenu="True" Name="menu" Height="20" Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="4" HorizontalAlignment="Left" VerticalAlignment="Top" Visibility="Visible">
+            <MenuItem Header="View">
+                <MenuItem Header="Activity Log" Name="MenuItem_ActivityLog" Click="ExpandCollapse"></MenuItem>
+                <MenuItem Header="Connection Details" Name="MenuItem_ConnectionDetail" Click="ExpandCollapse"></MenuItem>
+            </MenuItem>
+            <MenuItem Header="Device" Click="menu_window_device"/>
+            <MenuItem Header="Calibration" Click="menu_window_calibration"/>
+            <MenuItem Header="_About"   Click="menu_window_about"/>
+        </Menu>
+
+
+        <!-- Row 1 , Display-->
+        <Grid Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="4">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="1*" />
+                <ColumnDefinition Width="1*" />
+                <ColumnDefinition Width="1*" />
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="3*" />
+                <RowDefinition Height="1*" />
+                <RowDefinition Height="3*" />
+            </Grid.RowDefinitions>
+
+            <TextBlock Name="CurrentMeasurement_TextBlock" Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="3"
+                 Background="White" Margin="10,10, 40,10" HorizontalAlignment="Right"
+                 FontFamily="Consolas Bold" FontWeight="ExtraBold" FontSize="90"
+                 Text="{Binding CurrentMeasurementTxt, Mode=OneWay, Source={StaticResource CommunicatorVM}}" />
+
+            <TextBlock Name="CurrentMeasurementV_TextBlock" Grid.Column="0" Grid.Row="1"
+                 Background="White" Margin="10,10" HorizontalAlignment="Center"
+                 FontFamily="Consolas Bold" FontWeight="ExtraBold" FontSize="20"
+                 Text="{Binding CurrentMeasurementVoltageTxt, Mode=OneWay, Source={StaticResource CommunicatorVM}}" />
+
+            <TextBlock Name="CurrentMeasurementP_TextBlock" Grid.Column="1" Grid.Row="1"
+                 Background="White" Margin="10,10" HorizontalAlignment="Center"
+                 FontFamily="Consolas Bold" FontWeight="ExtraBold" FontSize="20"
+                 Text="{Binding CurrentMeasurementPowerTxt, Mode=OneWay, Source={StaticResource CommunicatorVM}}" />
+
+            <TextBlock Name="CurrentMeasurementS_TextBlock" Grid.Column="2" Grid.Row="1"
+                 Background="White" Margin="10,10" HorizontalAlignment="Center"
+                 FontFamily="Consolas Bold" FontWeight="ExtraBold" FontSize="20"
+                 Text="{Binding CurrentMeasurementSTxt, Mode=OneWay, Source={StaticResource CommunicatorVM}}" />
+
+            <ProgressBar Name="OutputCurrent_ProgressBar" Grid.Column="0" Grid.Row="2" Grid.ColumnSpan="3"
+                    Height="80" Minimum="-120" Maximum="20" Margin="10,10"
+                    Value="{Binding CurrentMeasurement, Mode=OneWay, Source={StaticResource CommunicatorVM}}"
+                    Foreground="{Binding BarColor, Mode=OneWay, Source={StaticResource CommunicatorVM}}"/>
+        </Grid>
+
+        <!-- Row 2, debugging log -->
+        <GroupBox Header="Activity Logging" Name="ActivityLogging_GroupBox" Grid.Column="0" Grid.Row="2" Grid.ColumnSpan="4" Margin="10,10,10,10"
+            Height="130"
+            Visibility="{Binding ActivityLogVisibility, Mode=TwoWay, Source={StaticResource CommunicatorVM}}">
+            <TextBox Name="ActivityLogging_TextBox" TextChanged="ActivityLogTextChangedHandler" IsEnabled="True" Background="WhiteSmoke" Margin="10,10,10,10" 
+                ScrollViewer.VerticalScrollBarVisibility="Auto"
+                Text="{Binding ActivityLogTxt, Mode=OneWay, Source={StaticResource CommunicatorVM}}"/>
+        </GroupBox>
+
+        <!-- Row 3 -->
+        <GroupBox Header="Communication" Name="Communication_GroupBox" Grid.Column="0" Grid.Row="3" Grid.ColumnSpan="4" Margin="10,10,10,10"
+            Height="130"
+            Visibility="{Binding CommunicationVisibility, Mode=TwoWay, Source={StaticResource CommunicatorVM}}">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="1*" />
+                    <ColumnDefinition Width="1*" />
+                    <ColumnDefinition Width="1*" />
+                    <ColumnDefinition Width="1*" />
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="1*" />
+                    <RowDefinition Height="1*" />
+                    <RowDefinition Height="1*" />
+                </Grid.RowDefinitions>
+
+                <!-- Row 0 -->
+                <TextBlock Name="ConnectionStatus_TextBlock" Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="2" Margin="10,10,10,10" 
+                Text="{Binding ConnectionStatusTxt, Source={StaticResource CommunicatorVM}}"/>
+                <TextBlock Name="Uptime_TextBlock" Grid.Column="2" Grid.Row="0" Margin="10,10,10,10"
+                Text="{Binding UptimeTxt, Mode=OneWay, Source={StaticResource CommunicatorVM}}"
+                Foreground="{Binding UserInterfaceColor, Source={StaticResource CommunicatorVM}}"/>
+
+                <!-- Row 1-->
+                <TextBlock Name="TxSuccessful_TextBlock" Grid.Column="0" Grid.Row="1" Margin="10,10,10,10"
+                Text="{Binding TxSuccessfulTxt, Mode=OneWay, Source={StaticResource CommunicatorVM}}"
+                Foreground="{Binding UserInterfaceColor, Source={StaticResource CommunicatorVM}}"/>
+                <TextBlock Name="TxFailed_TextBox" Grid.Column="1" Grid.Row="1" Margin="10,10,10,10"
+                Text="{Binding TxFailedTxt, Mode=OneWay, Source={StaticResource CommunicatorVM}}"
+                Foreground="{Binding UserInterfaceColor, Source={StaticResource CommunicatorVM}}"/>
+                <TextBlock Name="RxSuccessful_TextBlock" Grid.Column="2" Grid.Row="1" Margin="10,10,10,10"
+                Text="{Binding RxSuccessfulTxt, Mode=OneWay, Source={StaticResource CommunicatorVM}}"
+                Foreground="{Binding UserInterfaceColor, Source={StaticResource CommunicatorVM}}"/>
+                <TextBlock Name="RxFailed_TextBox" Grid.Column="3" Grid.Row="1" Margin="10,10,10,10"
+                Text="{Binding RxFailedTxt, Mode=OneWay, Source={StaticResource CommunicatorVM}}"
+                Foreground="{Binding UserInterfaceColor, Source={StaticResource CommunicatorVM}}"/>
+
+                <!-- Row 2-->
+                <TextBlock Name="TxSpeed_TextBlock" Grid.Column="0" Grid.Row="2" Grid.ColumnSpan="2" Margin="10,10,10,10"
+                Text="{Binding TxSpeedTxt, Mode=OneWay, Source={StaticResource CommunicatorVM}}"
+                Foreground="{Binding UserInterfaceColor, Source={StaticResource CommunicatorVM}}"/>
+                <TextBlock Name="TxSpeed_TextBox" Grid.Column="2" Grid.Row="2" Grid.ColumnSpan="2" Margin="10,10,10,10"
+                Text="{Binding RxSpeedTxt, Mode=OneWay, Source={StaticResource CommunicatorVM}}"
+                Foreground="{Binding UserInterfaceColor, Source={StaticResource CommunicatorVM}}"/>
+            </Grid>
+        </GroupBox>
+
+    </Grid>    
+    
+</Window>

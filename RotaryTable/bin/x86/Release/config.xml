@@ -1,0 +1,12 @@
+<Config>
+  <Device>
+    <VendorId>0x04D8</VendorId>
+    <ProductId>0xF08E</ProductId>
+  </Device>
+  <Window>
+    <PositionX>1021</PositionX>
+    <PositionY>669</PositionY>
+    <ActivityLog>Collapsed</ActivityLog>
+    <ConnectionDetails>Collapsed</ConnectionDetails>
+  </Window>
+</Config>
