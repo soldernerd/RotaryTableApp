@@ -29,6 +29,7 @@ namespace RotaryTable
         private byte _DisplayContrast;
         public byte DisplaySavedBrightness { get; private set; }
         public byte DisplaySavedContrast { get; private set; }
+        public char[,] DisplayContent { get; private set; } = new char[4,20];
         public List<byte> PacketsToRequest { get; set; }
         private List<UsbCommand> PendingCommands;
         public uint TxCount { get; private set; }
@@ -43,6 +44,7 @@ namespace RotaryTable
         public Int32[] CalibrationValues { get; private set; } = new Int32[14];
 
         public string DebugString { get; private set; }
+        public bool NewDebugString { get; set; }
 
 
 
@@ -100,6 +102,8 @@ namespace RotaryTable
             PendingCommands = new List<UsbCommand>();
             PacketsToRequest = new List<byte>();
             PacketsToRequest.Add(0x10);
+            PacketsToRequest.Add(0x11);
+            PacketsToRequest.Add(0x12);
             WaitingForDevice = false;
             _NewDataAvailable = false;
 
@@ -262,11 +266,14 @@ namespace RotaryTable
                 PendingCommands = new List<UsbCommand>();
                 PacketsToRequest = new List<byte>();
                 PacketsToRequest.Add(0x10);
+                PacketsToRequest.Add(0x11);
+                PacketsToRequest.Add(0x12);
                 WaitingForDevice = false;
             }
         }
 
         // HidUtility asks if a packet should be sent to the device
+
         // Prepare the buffer and request a transfer
         public void SendPacketHandler(object sender, UsbBuffer OutBuffer)
         {
@@ -348,7 +355,7 @@ namespace RotaryTable
         // HidUtility informs us if the requested transfer was successful and provides us with the received packet
         public void PacketReceivedHandler(object sender, UsbBuffer InBuffer)
         {
-            DebugString = "Start PacketReceivedHandler";
+            DebugString = String.Format("Start PacketReceivedHandler ({0:X})", InBuffer.buffer[1]);
             WaitingForDevice = false;
 
             //Parse received data
@@ -357,7 +364,30 @@ namespace RotaryTable
                 case 0x10:
                     ParseData(ref InBuffer);
                     break;
-            };
+
+                case 0x11:
+                    for(int i=0; i<20; ++i)
+                    {
+                        DisplayContent[0,i] = (char)InBuffer.buffer[4+i];
+                        DisplayContent[1,i] = (char) InBuffer.buffer[24+i];
+                    }
+                    break;
+
+                case 0x12:
+                    for (int i = 0; i < 20; ++i)
+                    {
+                        DisplayContent[2,i] = (char)InBuffer.buffer[4+i];
+                        DisplayContent[3,i] = (char)InBuffer.buffer[24+i];
+                    }
+                    break;
+
+                default:
+                    //We have received a packet of unknown content
+                    DebugString = String.Format("Unknown packet received: {0:X}", InBuffer.buffer[1]);
+                    NewDebugString = true;
+                    break;
+
+            }
 
             //Some statistics
             if (InBuffer.TransferSuccessful)
@@ -374,6 +404,21 @@ namespace RotaryTable
         public bool RequestValid()
         {
             return true;
+        }
+
+        public enum RotaryEncoder : byte
+        {
+            LeftEncoder_TurnLeft = 0x30,
+            LeftEncoder_TurnRight = 0x31,
+            LeftEncoder_ButtonPress = 0x32,
+            RightEncoder_TurnLeft = 0x33,
+            RightEncoder_TurnRight = 0x34,
+            RightEncoder_ButtonPress = 0x35
+        }
+
+        public void RequestEncoder(RotaryEncoder action)
+        {
+            PendingCommands.Add(new UsbCommand((byte)action));
         }
 
         public void ScheduleCommand(UsbCommand cmd)

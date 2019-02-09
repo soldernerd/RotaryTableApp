@@ -39,7 +39,8 @@ namespace RotaryTable
 
         public CommunicatorViewModel()
         {
-            config = new ConfigFile("config.xml");
+            //Change this later to not include path
+            config = new ConfigFile("C:\\Users\\lfaes\\OneDrive\\Visual Studio 2017\\Projects\\RotaryTable\\config.xml");
             _WindowPositionX = config.PositionX;
             _WindowPositionY = config.PositionY;
             
@@ -87,7 +88,67 @@ namespace RotaryTable
                 ActivityLogTxt += Environment.NewLine + string.Format("{0}: {1}", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff"), message);
             }
         }
- 
+
+        public void RequestLeftEncoderTurnLeft()
+        {
+            WriteLog("Left encoder turn left button clicked", false);
+            communicator.RequestEncoder(Communicator.RotaryEncoder.LeftEncoder_TurnLeft);
+            if (PropertyChanged != null)
+            {
+                PropertyChanged(this, new PropertyChangedEventArgs("ActivityLogTxt"));
+            }
+        }
+
+        public void RequestLeftEncoderTurnRight()
+        {
+            WriteLog("Left encoder turn right button clicked", false);
+            communicator.RequestEncoder(Communicator.RotaryEncoder.LeftEncoder_TurnRight);
+            if (PropertyChanged != null)
+            {
+                PropertyChanged(this, new PropertyChangedEventArgs("ActivityLogTxt"));
+            }
+        }
+
+        public void RequestLeftEncoderButtonPress()
+        {
+            WriteLog("Left encoder press button clicked", false);
+            communicator.RequestEncoder(Communicator.RotaryEncoder.LeftEncoder_ButtonPress);
+            if (PropertyChanged != null)
+            {
+                PropertyChanged(this, new PropertyChangedEventArgs("ActivityLogTxt"));
+            }
+        }
+
+        public void RequestRightEncoderTurnLeft()
+        {
+            WriteLog("Right encoder turn left button clicked", false);
+            communicator.RequestEncoder(Communicator.RotaryEncoder.RightEncoder_TurnLeft);
+            if (PropertyChanged != null)
+            {
+                PropertyChanged(this, new PropertyChangedEventArgs("ActivityLogTxt"));
+            }
+        }
+
+        public void RequestRightEncoderTurnRight()
+        {
+            WriteLog("Right encoder turn right button clicked", false);
+            communicator.RequestEncoder(Communicator.RotaryEncoder.RightEncoder_TurnRight);
+            if (PropertyChanged != null)
+            {
+                PropertyChanged(this, new PropertyChangedEventArgs("ActivityLogTxt"));
+            }
+        }
+
+        public void RequestRightEncoderButtonPress()
+        {
+            WriteLog("Right encoder press button clicked", false);
+            communicator.RequestEncoder(Communicator.RotaryEncoder.RightEncoder_ButtonPress);
+            if (PropertyChanged != null)
+            {
+                PropertyChanged(this, new PropertyChangedEventArgs("ActivityLogTxt"));
+            }
+        }
+
         public void SavePidVid()
         {
             communicator.ScheduleCommand(new Communicator.UsbCommand(0x30));
@@ -171,6 +232,54 @@ namespace RotaryTable
             }
         }
 
+        public ICommand LeftEncoder_TurnLeftClick
+        {
+            get
+            {
+                return new UiCommand(this.RequestLeftEncoderTurnLeft, communicator.RequestValid);
+            }
+        }
+
+        public ICommand LeftEncoder_TurnRightClick
+        {
+            get
+            {
+                return new UiCommand(this.RequestLeftEncoderTurnRight, communicator.RequestValid);
+            }
+        }
+
+        public ICommand LeftEncoder_ButtonPressClick
+        {
+            get
+            {
+                return new UiCommand(this.RequestLeftEncoderButtonPress, communicator.RequestValid);
+            }
+        }
+
+        public ICommand RightEncoder_TurnLeftClick
+        {
+            get
+            {
+                return new UiCommand(this.RequestRightEncoderTurnLeft, communicator.RequestValid);
+            }
+        }
+
+        public ICommand RightEncoder_TurnRightClick
+        {
+            get
+            {
+                return new UiCommand(this.RequestRightEncoderTurnRight, communicator.RequestValid);
+            }
+        }
+
+        public ICommand RightEncoder_ButtonPressClick
+        {
+            get
+            {
+                return new UiCommand(this.RequestRightEncoderButtonPress, communicator.RequestValid);
+            }
+        }
+
         public ICommand SavePidVidClick
         {
             get
@@ -216,6 +325,12 @@ namespace RotaryTable
 
         public void TimerTickHandler(object sender, EventArgs e)
         {
+            if (communicator.NewDebugString)
+            {
+                WriteLog(communicator.DebugString, false);
+                communicator.NewDebugString = false;
+            }
+
             if (PropertyChanged != null)
             {
                 //WriteLog(communicator.DebugString, false);
@@ -232,6 +347,7 @@ namespace RotaryTable
                         }
                     }
 
+                    PropertyChanged(this, new PropertyChangedEventArgs("DisplayTxt"));
                     PropertyChanged(this, new PropertyChangedEventArgs("CurrentMeasurementAdc"));
                     PropertyChanged(this, new PropertyChangedEventArgs("CurrentMeasurementAdcTxt"));
                     PropertyChanged(this, new PropertyChangedEventArgs("CurrentMeasurementAdcSum"));
@@ -313,6 +429,66 @@ namespace RotaryTable
                 PropertyChanged(this, new PropertyChangedEventArgs("UptimeTxt"));
                 PropertyChanged(this, new PropertyChangedEventArgs("ActivityLogTxt"));
                 PropertyChanged(this, new PropertyChangedEventArgs("UserInterfaceColor"));
+            }
+        }
+
+        public string PositionTxt
+        {
+            get
+            {
+                return "123.456°";
+            }
+        }
+
+        public string TemperatureInternalTxt
+        {
+            get
+            {
+                return "45.6°C";
+            }
+        }
+
+        public string TemperatureExternalTxt
+        {
+            get
+            {
+                return "32.1°C";
+            }
+        }
+
+        public string FanTxt
+        {
+            get
+            {
+                return "Fan OFF";
+            }
+        }
+
+        public string BrakeTxt
+        {
+            get
+            {
+                return "Brake OFF";
+            }
+        }
+
+        public string DisplayTxt
+        {
+            get
+            {
+                byte b = 55;
+                char c = (char) 55;
+                string s = "";
+                for(int row=0; row<4; ++row)
+                {
+                    for(int pos=0; pos<20; ++pos)
+                    {
+                        s += communicator.DisplayContent[row, pos];
+                    }
+                    s += System.Environment.NewLine;
+                }
+                return s;
+                //return "Hello World";
             }
         }
 
