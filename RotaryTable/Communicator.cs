@@ -29,7 +29,7 @@ namespace RotaryTable
         private byte _DisplayContrast;
         public byte DisplaySavedBrightness { get; private set; }
         public byte DisplaySavedContrast { get; private set; }
-        public char[,] DisplayContent { get; private set; } = new char[4,20];
+        public string[] DisplayContent { get; private set; } = new string[4];
         public List<byte> PacketsToRequest { get; set; }
         private List<UsbCommand> PendingCommands;
         public uint TxCount { get; private set; }
@@ -37,6 +37,40 @@ namespace RotaryTable
         public uint RxCount { get; private set; }
         public uint RxFailedCount { get; private set; }
         public bool WaitingForDevice { get; private set; }
+        //Device information 
+        public byte FirmwareMajor { get; private set; }
+        public byte FirmwareMinor { get; private set; }
+        public byte FirmwareFix { get; private set; }
+
+        public byte DeviceStatus_SubTimeSlot { get; private set; }
+        public byte DeviceStatus_TimeSlot { get; private set; }
+        public byte DeviceStatus_Done { get; private set; }
+        public sbyte DeviceStatus_LeftEncoderCount { get; private set; }
+        public sbyte DeviceStatus_LeftEncoderButton { get; private set; }
+        public sbyte DeviceStatus_RightEncoderCount { get; private set; }
+        public sbyte DeviceStatus_RightEncoderButton { get; private set; }
+        public UInt32 DeviceStatus_CurrentPositionInSteps { get; private set; }
+        public Int32 DeviceStatus_CurrentPositionInDegrees { get; private set; }
+        public byte DeviceStatus_DisplayState { get; private set; }
+        public byte DeviceStatus_BeepCount { get; private set; }
+        public Int16 DeviceStatus_InternalTemperature { get; private set; }
+        public Int16 DeviceStatus_ExternalTemperature { get; private set; }
+        public byte DeviceStatus_FanOn { get; private set; }
+        public byte DeviceStatus_BrakeOn { get; private set; }
+        public byte DeviceStatus_Busy { get; private set; }
+
+        public UInt32 DeviceConfig_FullCircleInSteps { get; private set; }
+        public byte DeviceConfig_InverseDirection { get; private set; }
+        public UInt16 DeviceConfig_OvershootInSteps { get; private set; }
+        public UInt16 DeviceConfig_MinimumSpeed { get; private set; }
+        public UInt16 DeviceConfig_MaximumSpeed { get; private set; }
+        public UInt16 DeviceConfig_InitialSpeedArc { get; private set; }
+        public UInt16 DeviceConfig_MaximumSpeedArc { get; private set; }
+        public UInt16 DeviceConfig_InitialSpeedManual { get; private set; }
+        public UInt16 DeviceConfig_MaximumSpeedManual { get; private set; }
+        public byte DeviceConfig_BeepDuration { get; private set; }
+       
+
         //Information obtained from the device
         public Int16 CurrentMeasurementAdc { get; private set; }
         public Int32 CurrentMeasurementAdcSum { get; private set; }
@@ -104,6 +138,7 @@ namespace RotaryTable
             PacketsToRequest.Add(0x10);
             PacketsToRequest.Add(0x11);
             PacketsToRequest.Add(0x12);
+            PacketsToRequest.Add(0x13);
             WaitingForDevice = false;
             _NewDataAvailable = false;
 
@@ -164,24 +199,84 @@ namespace RotaryTable
         }
 
 
-        //Function to parse packet received over USB
-        private void ParseData(ref UsbBuffer InBuffer)
+        //Function to parse status packet received over USB
+        private void ParseStatus(ref UsbBuffer InBuffer)
         {
-            //Input values are often encoded as Int16
-            CurrentMeasurementAdc = (Int16)((InBuffer.buffer[3] << 8) + InBuffer.buffer[2]);
-            CurrentMeasurementAdcSum = (Int32)((InBuffer.buffer[6] << 16) + (InBuffer.buffer[5] << 8) + InBuffer.buffer[4]);
-            CurrentMeasurement = (Int16)((InBuffer.buffer[9] << 8) + InBuffer.buffer[8]);
-            _DisplayBrightness = (byte) InBuffer.buffer[12];
-            _DisplayContrast = (byte) InBuffer.buffer[13];
-            DisplaySavedBrightness = (byte)InBuffer.buffer[14];
-            DisplaySavedContrast = (byte)InBuffer.buffer[15];
-            //Calibration
-            for(int i=0; i<CalibrationValues.Length; ++i)
+            FirmwareMajor = InBuffer.buffer[4];
+            FirmwareMinor = InBuffer.buffer[5];
+            FirmwareFix = InBuffer.buffer[6];
+
+            DeviceStatus_SubTimeSlot = InBuffer.buffer[7];
+            DeviceStatus_TimeSlot = InBuffer.buffer[8];
+            DeviceStatus_Done = InBuffer.buffer[9];
+            DeviceStatus_LeftEncoderCount = (sbyte) InBuffer.buffer[10];
+            DeviceStatus_LeftEncoderButton = (sbyte)InBuffer.buffer[11];
+            DeviceStatus_RightEncoderCount = (sbyte)InBuffer.buffer[12];
+            DeviceStatus_RightEncoderButton = (sbyte)InBuffer.buffer[13];
+            DeviceStatus_CurrentPositionInSteps = BitConverter.ToUInt32(InBuffer.buffer, 14);
+            DeviceStatus_CurrentPositionInDegrees = BitConverter.ToUInt16(InBuffer.buffer, 18);
+            DeviceStatus_DisplayState = InBuffer.buffer[22];
+            DeviceStatus_BeepCount = InBuffer.buffer[23];
+            DeviceStatus_InternalTemperature = BitConverter.ToInt16(InBuffer.buffer, 24);
+            DeviceStatus_ExternalTemperature = BitConverter.ToInt16(InBuffer.buffer, 26);
+            DeviceStatus_FanOn = InBuffer.buffer[28];
+            DeviceStatus_BrakeOn = InBuffer.buffer[29];
+            DeviceStatus_Busy = InBuffer.buffer[30];
+
+            //44-47:    uint32_t full_circle_in_steps
+            //48:       uint8_t inverse_direction
+            //49-50:    uint16_t overshoot_in_steps
+            //51-52:    uint16_t minimum_speed
+            //53-54:    uint16_t maximum_speed
+            //55-56:    uint16_t initial_speed_arc
+            //57-58:    uint16_t maximum_speed_arc
+            //59-60:    uint16_t initial_speed_manual
+            //61-62:    uint16_t maximum_speed_manual
+            //63:       uint8_t beep_duration
+            DeviceConfig_FullCircleInSteps = BitConverter.ToUInt32(InBuffer.buffer, 45);
+            DeviceConfig_InverseDirection = InBuffer.buffer[49];
+            DeviceConfig_OvershootInSteps = BitConverter.ToUInt16(InBuffer.buffer, 50);
+            DeviceConfig_MinimumSpeed = BitConverter.ToUInt16(InBuffer.buffer, 52);
+            DeviceConfig_MaximumSpeed = BitConverter.ToUInt16(InBuffer.buffer, 54);
+            DeviceConfig_InitialSpeedArc = BitConverter.ToUInt16(InBuffer.buffer, 56);
+            DeviceConfig_MaximumSpeedArc = BitConverter.ToUInt16(InBuffer.buffer, 58);
+            DeviceConfig_InitialSpeedManual = BitConverter.ToUInt16(InBuffer.buffer, 60);
+            DeviceConfig_MaximumSpeedManual = BitConverter.ToUInt16(InBuffer.buffer, 62);
+            DeviceConfig_BeepDuration = InBuffer.buffer[49];
+        }
+
+        private void ParseDisplay(ref UsbBuffer InBuffer)
+        {
+            string Replace(byte b)
             {
-                CalibrationValues[i] = IntFromBytes(InBuffer.buffer[3 * i + 24], InBuffer.buffer[3 * i + 23], InBuffer.buffer[3 * i + 22]);
+                switch(b)
+                {
+                    case 0x00:
+                        return "|";
+
+                    case 0x01:
+                        return "°";
+
+                    case 0x02:
+                        return "ä";
+
+                    default:
+                        return "" + ((char)b);
+                }
             }
-            
-            _NewDataAvailable = true;
+
+            int first_line = 0;
+            if (InBuffer.buffer[1] == 0x12)
+                first_line = 2;
+
+            DisplayContent[first_line] = "";
+            DisplayContent[first_line+1] = "";
+
+            for (int i = 0; i < 20; ++i)
+            {
+                DisplayContent[first_line] += Replace(InBuffer.buffer[4 + i]);
+                DisplayContent[first_line+1] += Replace(InBuffer.buffer[24 + i]);
+            }
         }
 
         // Accessor for _Vid
@@ -268,6 +363,7 @@ namespace RotaryTable
                 PacketsToRequest.Add(0x10);
                 PacketsToRequest.Add(0x11);
                 PacketsToRequest.Add(0x12);
+                PacketsToRequest.Add(0x13);
                 WaitingForDevice = false;
             }
         }
@@ -362,23 +458,19 @@ namespace RotaryTable
             switch (InBuffer.buffer[1])
             {
                 case 0x10:
-                    ParseData(ref InBuffer);
+                    ParseStatus(ref InBuffer);
                     break;
 
                 case 0x11:
-                    for(int i=0; i<20; ++i)
-                    {
-                        DisplayContent[0,i] = (char)InBuffer.buffer[4+i];
-                        DisplayContent[1,i] = (char) InBuffer.buffer[24+i];
-                    }
+                case 0x12:
+                    ParseDisplay(ref InBuffer);
                     break;
 
-                case 0x12:
-                    for (int i = 0; i < 20; ++i)
-                    {
-                        DisplayContent[2,i] = (char)InBuffer.buffer[4+i];
-                        DisplayContent[3,i] = (char)InBuffer.buffer[24+i];
-                    }
+                case 0x13:
+                    //mode-specific details
+
+                    //This is the last package. We now have a consistent snapshot
+                    _NewDataAvailable = true;
                     break;
 
                 default:

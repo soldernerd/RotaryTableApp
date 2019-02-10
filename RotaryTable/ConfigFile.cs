@@ -101,7 +101,7 @@ namespace ConfigurationFile
         {
             List<Tag> tags = new List<Tag>();
             tags.Add(new Tag("Config/Device/VendorId", "0x04D8"));
-            tags.Add(new Tag("Config/Device/ProductId", "0xF08E"));
+            tags.Add(new Tag("Config/Device/ProductId", "0xEDCF"));
             tags.Add(new Tag("Config/Window/PositionX", "100"));
             tags.Add(new Tag("Config/Window/PositionY", "100"));
             tags.Add(new Tag("/Config/Window/ActivityLog", "Visible"));

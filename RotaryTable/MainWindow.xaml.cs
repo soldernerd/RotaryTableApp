@@ -24,7 +24,6 @@ namespace RotaryTable
     /// </summary>
     public partial class MainWindow : Window
     {
-        public CalibrationWindow CalibrationWin;
         public DeviceWindow DeviceWin;
 
         public MainWindow()
@@ -37,10 +36,6 @@ namespace RotaryTable
             if (DeviceWin != null)
             {
                 DeviceWin.Close();
-            }
-            if (CalibrationWin != null)
-            {
-                CalibrationWin.Close();
             }
         }
 
@@ -151,7 +146,7 @@ namespace RotaryTable
 
         private void menu_window_about(object sender, EventArgs e)
         {
-            MessageBox.Show("Lukas Fässler, HB9TKO, 2017\n\nlfaessler@gmx.net\nVisit soldernerd.com for more information", "About S-Meter");
+            MessageBox.Show("Lukas Fässler, 2019\n\nlfaessler@gmx.net\nVisit soldernerd.com for more information", "About Stepper Motor Controller");
         }
 
         private void menu_window_device(object sender, EventArgs e)
@@ -163,17 +158,6 @@ namespace RotaryTable
             DeviceWin.Show();
             DeviceWin.WindowState = WindowState.Normal;
             DeviceWin.Focus();
-        }
-
-        private void menu_window_calibration(object sender, EventArgs e)
-        {
-            if (CalibrationWin == null)
-            {
-                CalibrationWin = new CalibrationWindow(this);
-            }
-            CalibrationWin.Show();
-            CalibrationWin.WindowState = WindowState.Normal;
-            CalibrationWin.Focus();
         }
     }
 }

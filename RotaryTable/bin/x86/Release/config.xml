@@ -1,12 +1,12 @@
 <Config>
   <Device>
     <VendorId>0x04D8</VendorId>
-    <ProductId>0xF08E</ProductId>
+    <ProductId>0xEDCF</ProductId>
   </Device>
   <Window>
-    <PositionX>1021</PositionX>
-    <PositionY>669</PositionY>
+    <PositionX>2441</PositionX>
+    <PositionY>338</PositionY>
     <ActivityLog>Collapsed</ActivityLog>
-    <ConnectionDetails>Collapsed</ConnectionDetails>
+    <ConnectionDetails>Visible</ConnectionDetails>
   </Window>
 </Config>

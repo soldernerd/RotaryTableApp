@@ -40,7 +40,8 @@ namespace RotaryTable
         public CommunicatorViewModel()
         {
             //Change this later to not include path
-            config = new ConfigFile("C:\\Users\\lfaes\\OneDrive\\Visual Studio 2017\\Projects\\RotaryTable\\config.xml");
+            //config = new ConfigFile("C:\\Users\\lfaes\\OneDrive\\Visual Studio 2017\\Projects\\RotaryTable\\config.xml");
+            config = new ConfigFile("config.xml");
             _WindowPositionX = config.PositionX;
             _WindowPositionY = config.PositionY;
             
@@ -312,6 +313,17 @@ namespace RotaryTable
             }
         }
 
+        public string UserInterfaceEnabled
+        {
+            get
+            {
+                if (communicator.HidUtil.ConnectionStatus == HidUtility.UsbConnectionStatus.Connected)
+                    return "True";
+                else
+                    return "False";
+            }
+        }
+
         public string UserInterfaceColor
         {
             get
@@ -348,16 +360,13 @@ namespace RotaryTable
                     }
 
                     PropertyChanged(this, new PropertyChangedEventArgs("DisplayTxt"));
-                    PropertyChanged(this, new PropertyChangedEventArgs("CurrentMeasurementAdc"));
-                    PropertyChanged(this, new PropertyChangedEventArgs("CurrentMeasurementAdcTxt"));
-                    PropertyChanged(this, new PropertyChangedEventArgs("CurrentMeasurementAdcSum"));
-                    PropertyChanged(this, new PropertyChangedEventArgs("CurrentMeasurementAdcSumTxt"));
-                    PropertyChanged(this, new PropertyChangedEventArgs("CurrentMeasurement"));
-                    PropertyChanged(this, new PropertyChangedEventArgs("CurrentMeasurementTxt"));
-                    PropertyChanged(this, new PropertyChangedEventArgs("CurrentMeasurementVoltageTxt"));
-                    PropertyChanged(this, new PropertyChangedEventArgs("CurrentMeasurementPowerTxt"));
-                    PropertyChanged(this, new PropertyChangedEventArgs("CurrentMeasurementSTxt"));
-                    PropertyChanged(this, new PropertyChangedEventArgs("BarColor"));
+                    PropertyChanged(this, new PropertyChangedEventArgs("PositionTxt"));
+                    PropertyChanged(this, new PropertyChangedEventArgs("TemperatureInternalTxt"));
+                    PropertyChanged(this, new PropertyChangedEventArgs("TemperatureExternalTxt"));
+                    PropertyChanged(this, new PropertyChangedEventArgs("FanTxt"));
+                    PropertyChanged(this, new PropertyChangedEventArgs("BrakeTxt"));
+                    PropertyChanged(this, new PropertyChangedEventArgs("FirmwareVersionTxt"));
+                    PropertyChanged(this, new PropertyChangedEventArgs("DeviceConfigurationTxt"));
                     /*
                     PropertyChanged(this, new PropertyChangedEventArgs("Calibration00Txt"));
                     PropertyChanged(this, new PropertyChangedEventArgs("Calibration01Txt"));
@@ -429,6 +438,24 @@ namespace RotaryTable
                 PropertyChanged(this, new PropertyChangedEventArgs("UptimeTxt"));
                 PropertyChanged(this, new PropertyChangedEventArgs("ActivityLogTxt"));
                 PropertyChanged(this, new PropertyChangedEventArgs("UserInterfaceColor"));
+                PropertyChanged(this, new PropertyChangedEventArgs("UserInterfaceEnabled"));
+                PropertyChanged(this, new PropertyChangedEventArgs("DisplayTxt"));
+                PropertyChanged(this, new PropertyChangedEventArgs("PositionTxt"));
+                PropertyChanged(this, new PropertyChangedEventArgs("TemperatureInternalTxt"));
+                PropertyChanged(this, new PropertyChangedEventArgs("TemperatureExternalTxt"));
+                PropertyChanged(this, new PropertyChangedEventArgs("FanTxt"));
+                PropertyChanged(this, new PropertyChangedEventArgs("BrakeTxt"));
+                PropertyChanged(this, new PropertyChangedEventArgs("FirmwareVersionTxt"));
+                PropertyChanged(this, new PropertyChangedEventArgs("DeviceConfigurationTxt"));
+                
+            }
+        }
+
+        public string FirmwareVersionTxt
+        {
+            get
+            {
+                return ("Fimware " + communicator.FirmwareMajor).ToString() + "." + (communicator.FirmwareMinor).ToString() + "." + (communicator.FirmwareFix).ToString();
             }
         }
 
@@ -436,15 +463,27 @@ namespace RotaryTable
         {
             get
             {
-                return "123.456°";
-            }
+                if (communicator.HidUtil.ConnectionStatus != HidUtility.UsbConnectionStatus.Connected)
+                    return "Not connected";
+                else
+                {
+                    double position = 360.0 * (double)communicator.DeviceStatus_CurrentPositionInSteps / (double)communicator.DeviceConfig_FullCircleInSteps;
+                    int degrees = (int)position;
+                    int minutes = (int)(60 * (position - degrees));
+                    int seconds = (int)(3600 * (position - degrees) - 60 * minutes);
+                    return string.Format("{0:0.000}° = {1}°{2}'{3}''", position, degrees, minutes, seconds);
+                }
+            }   
         }
 
         public string TemperatureInternalTxt
         {
             get
             {
-                return "45.6°C";
+                if (communicator.HidUtil.ConnectionStatus != HidUtility.UsbConnectionStatus.Connected)
+                    return "";
+                else
+                    return String.Format("On-board temperature: {0:0.0}°C", 0.01 * communicator.DeviceStatus_InternalTemperature);
             }
         }
 
@@ -452,7 +491,10 @@ namespace RotaryTable
         {
             get
             {
-                return "32.1°C";
+                if (communicator.HidUtil.ConnectionStatus != HidUtility.UsbConnectionStatus.Connected)
+                    return "";
+                else
+                    return String.Format("External temperature: {0:0.0}°C", 0.01 * communicator.DeviceStatus_ExternalTemperature);
             }
         }
 
@@ -460,7 +502,15 @@ namespace RotaryTable
         {
             get
             {
-                return "Fan OFF";
+                if (communicator.HidUtil.ConnectionStatus != HidUtility.UsbConnectionStatus.Connected)
+                    return "";
+                else
+                { 
+                    if (communicator.DeviceStatus_FanOn != 0)
+                        return "Fan ON";
+                    else
+                        return "Fan OFF";
+                }
             }
         }
 
@@ -468,7 +518,15 @@ namespace RotaryTable
         {
             get
             {
-                return "Brake OFF";
+                if (communicator.HidUtil.ConnectionStatus != HidUtility.UsbConnectionStatus.Connected)
+                    return "";
+                else
+                {
+                    if (communicator.DeviceStatus_BrakeOn != 0)
+                        return "Brake ON";
+                    else
+                        return "Brake OFF";
+                }
             }
         }
 
@@ -476,19 +534,62 @@ namespace RotaryTable
         {
             get
             {
-                byte b = 55;
-                char c = (char) 55;
-                string s = "";
-                for(int row=0; row<4; ++row)
+                if (communicator.HidUtil.ConnectionStatus != HidUtility.UsbConnectionStatus.Connected)
+                    return "";
+                else
                 {
-                    for(int pos=0; pos<20; ++pos)
-                    {
-                        s += communicator.DisplayContent[row, pos];
-                    }
-                    s += System.Environment.NewLine;
+                    return communicator.DisplayContent[0]
+                        + System.Environment.NewLine
+                        + communicator.DisplayContent[1]
+                        + System.Environment.NewLine
+                        + communicator.DisplayContent[2]
+                        + System.Environment.NewLine
+                        + communicator.DisplayContent[3];
                 }
-                return s;
-                //return "Hello World";
+            }
+        }
+
+        public string DeviceConfigurationTxt
+        {
+
+            get
+            {
+                string byte_to_bool(byte b)
+                {
+                    if (b == 0)
+                        return "No";
+                    else
+                        return "Yes";
+                }
+
+
+                if (communicator.HidUtil.ConnectionStatus != HidUtility.UsbConnectionStatus.Connected)
+                    return "Not connected";
+                else
+                {
+
+                    string s = "Full circle in steps: {0}" + System.Environment.NewLine
+                        + "Inverse direction: {1}" + System.Environment.NewLine
+                        + "Overshoot in steps: {2}" + System.Environment.NewLine
+                        + "Minimum speed: {3}" + System.Environment.NewLine
+                        + "Maximum speed: {4}" + System.Environment.NewLine
+                        + "Initial speed arc: {5}" + System.Environment.NewLine
+                        + "Maximum speed arc: {6}" + System.Environment.NewLine
+                        + "Initial speed manual: {7}" + System.Environment.NewLine
+                        + "Maximum speed manual: {8}" + System.Environment.NewLine
+                        + "Beep duration: {9}" + System.Environment.NewLine;
+                    return String.Format(s,
+                        communicator.DeviceConfig_FullCircleInSteps,
+                        byte_to_bool(communicator.DeviceConfig_InverseDirection),
+                        communicator.DeviceConfig_OvershootInSteps,
+                        communicator.DeviceConfig_MinimumSpeed,
+                        communicator.DeviceConfig_MaximumSpeed,
+                        communicator.DeviceConfig_InitialSpeedArc,
+                        communicator.DeviceConfig_MaximumSpeedArc,
+                        communicator.DeviceConfig_InitialSpeedManual,
+                        communicator.DeviceConfig_MaximumSpeedManual,
+                        communicator.DeviceConfig_BeepDuration);
+                }
             }
         }
 
@@ -653,140 +754,6 @@ namespace RotaryTable
                     }
                 }
                 return "RX Speed: n/a";
-            }
-        }
-
-        public double CurrentMeasurement
-        {
-            get
-            {
-                return 0.01 * (double) communicator.CurrentMeasurement;
-            }
-        }
-
-        public string CurrentMeasurementTxt
-        {
-            get
-            {
-                if (communicator.HidUtil.ConnectionStatus != HidUtility.UsbConnectionStatus.Connected)
-                    return "No Device";
-                Int16 measurement = communicator.CurrentMeasurement;
-                if (measurement == Int16.MinValue)
-                    return "No Signal";
-                if (measurement == Int16.MaxValue)
-                    return "Overload";
-                return string.Format("{0:+0.00;-0.00;0.00}dBm", 0.01 * (double) measurement);
-            }
-        }
-
-        public int CurrentMeasurementAdc
-        {
-            get
-            {
-                return communicator.CurrentMeasurementAdc;
-            }
-        }
-
-        public string CurrentMeasurementAdcTxt
-        {
-            get
-            {
-                return communicator.CurrentMeasurementAdc.ToString();
-            }
-        }
-
-        public int CurrentMeasurementAdcSum
-        {
-            get
-            {
-                return communicator.CurrentMeasurementAdcSum;
-            }
-        }
-
-        public string CurrentMeasurementAdcSumTxt
-        {
-            get
-            {
-                return communicator.CurrentMeasurementAdcSum.ToString();
-            }
-        }
-
-        public string CurrentMeasurementVoltageTxt
-        {
-            get
-            {
-                if (communicator.HidUtil.ConnectionStatus != HidUtility.UsbConnectionStatus.Connected)
-                    return "-";
-                if (communicator.CurrentMeasurement == Int16.MinValue)
-                    return "-";
-                double pwr = Math.Pow(10.0, 0.1 * CurrentMeasurement - 3.0);
-                double vltg = Math.Sqrt(50.0 * pwr);
-                if (vltg < 0.000000001)
-                    return string.Format("{0:0.000}pV", 1000000000000.0 * vltg);
-                if (vltg < 0.000001)
-                    return string.Format("{0:0.000}nV", 1000000000.0 * vltg);
-                if (vltg < 0.001)
-                    return string.Format("{0:0.000}\u03bcV", 1000000.0 * vltg); // \u03bc is unicode for a lower-case greek mu
-                if (vltg < 1.0)
-                    return string.Format("{0:0.000}mV", 1000.0 * vltg);
-                return string.Format("{0:0.000}V", vltg);
-            }
-        }
-
-        public string CurrentMeasurementPowerTxt
-        {
-            get
-            {
-                if (communicator.HidUtil.ConnectionStatus != HidUtility.UsbConnectionStatus.Connected)
-                    return "-";
-                if (communicator.CurrentMeasurement == Int16.MinValue)
-                    return "-";
-                double pwr = Math.Pow(10.0, 0.1*CurrentMeasurement-3.0);
-                if (pwr < 0.000000000001)
-                    return string.Format("{0:0.000}fW", 1000000000000000.0 * pwr);
-                if (pwr < 0.000000001)
-                    return string.Format("{0:0.000}pW", 1000000000000.0 * pwr);
-                if (pwr < 0.000001)
-                    return string.Format("{0:0.000}nW", 1000000000.0 * pwr);
-                if (pwr < 0.001)
-                    return string.Format("{0:0.000}\u03bcW", 1000000.0 * pwr); // \u03bc is unicode for a lower-case greek mu
-                if (pwr<1.0)
-                    return string.Format("{0:0.000}mW", 1000.0*pwr);
-                return string.Format("{0:0.000}W", pwr);
-            }
-        }
-
-        public string CurrentMeasurementSTxt
-        {
-            get
-            {
-                if (communicator.HidUtil.ConnectionStatus != HidUtility.UsbConnectionStatus.Connected)
-                    return "-";
-                int measurement = communicator.CurrentMeasurement;
-                if (measurement == Int16.MinValue)
-                    return "-";
-                int temp = measurement + 12749;
-                int svalue = temp / 600;
-                int fraction = temp % 600;
-                fraction /= 100;
-                while (svalue>9)
-                {
-                    --svalue;
-                    fraction += 6;
-                }
-                
-                if(fraction==0)
-                    return string.Format("S{0:0}", svalue);
-                else
-                    return string.Format("S{0}+{1}", svalue.ToString(), fraction.ToString());
-            }
-        }
-
-        public string BarColor
-        {
-            get
-            {
-                return "MidnightBlue";
             }
         }
 
