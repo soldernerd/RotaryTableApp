@@ -111,6 +111,17 @@ namespace RotaryTable
                 this.data.Add(val_bytes[0]);
             }
 
+            public UsbCommand(byte command, Int32 value)
+            {
+                this.command = command;
+                this.data = new List<byte>();
+                byte[] val_bytes = BitConverter.GetBytes(value);
+                this.data.Add(val_bytes[3]);
+                this.data.Add(val_bytes[2]);
+                this.data.Add(val_bytes[1]);
+                this.data.Add(val_bytes[0]);
+            }
+
             public List<byte> GetByteList()
             {
                 List<byte> ByteList = new List<byte>();
@@ -511,6 +522,38 @@ namespace RotaryTable
         public void RequestEncoder(RotaryEncoder action)
         {
             PendingCommands.Add(new UsbCommand((byte)action));
+        }
+
+        public void RequestJumpDegrees(double degrees)
+        {
+            //Calculate distance in steps
+            degrees *= this.DeviceConfig_FullCircleInSteps;
+            degrees /= 360.0;
+            Int32 distance_in_steps = (Int32)degrees;
+            PendingCommands.Add(new UsbCommand((byte) ExtendedRequest.JumpSteps, distance_in_steps));
+        }
+
+        public enum SimpleRequest: byte
+        {
+            SelectModeMainMenu = 0x20,
+            SelectModeSetup = 0x21,
+            SelectModeDivide = 0x22,
+            SelectModeArc = 0x23,
+            SelectModeManual = 0x24,
+            SelectModeGo2Zero = 0x25,
+            SetZeroPositionCCW = 0x26,
+            SetZeroPositionCW = 0x27,
+            GoToZero = 0x28
+        }
+
+        public enum ExtendedRequest : byte
+        {
+            JumpSteps = 0x90
+        }
+
+        public void RequestShort(ExtendedRequest request)
+        {
+            PendingCommands.Add(new UsbCommand((byte) request));
         }
 
         public void ScheduleCommand(UsbCommand cmd)

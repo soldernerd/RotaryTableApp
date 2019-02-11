@@ -44,7 +44,7 @@ namespace RotaryTable
             config = new ConfigFile("config.xml");
             _WindowPositionX = config.PositionX;
             _WindowPositionY = config.PositionY;
-            
+
             communicator = new Communicator();
             communicator.HidUtil.RaiseDeviceAddedEvent += DeviceAddedEventHandler;
             communicator.HidUtil.RaiseDeviceRemovedEvent += DeviceRemovedEventHandler;
@@ -152,8 +152,8 @@ namespace RotaryTable
 
         public void SavePidVid()
         {
-            communicator.ScheduleCommand(new Communicator.UsbCommand(0x30));
-            WriteLog("Brightness and contrast saved", false);
+            //communicator.ScheduleCommand(new Communicator.UsbCommand(0x30));
+            //WriteLog("Brightness and contrast saved", false);
 
             if ((_Pid != communicator.Pid) || (_Vid != communicator.Vid))
             {
@@ -169,12 +169,12 @@ namespace RotaryTable
 
         public void ResetPidVid()
         {
-            communicator.ScheduleCommand(new Communicator.UsbCommand(0x31));
-            DisplayBrightness = communicator.DisplaySavedBrightness;
-            DisplayContrast = communicator.DisplaySavedContrast;
-            PropertyChanged(this, new PropertyChangedEventArgs("DisplayBrightness"));
-            PropertyChanged(this, new PropertyChangedEventArgs("DisplayContrast"));
-            WriteLog("Brightness and contrast reset", false);
+            //communicator.ScheduleCommand(new Communicator.UsbCommand(0x31));
+            //DisplayBrightness = communicator.DisplaySavedBrightness;
+            //DisplayContrast = communicator.DisplaySavedContrast;
+            //PropertyChanged(this, new PropertyChangedEventArgs("DisplayBrightness"));
+            //PropertyChanged(this, new PropertyChangedEventArgs("DisplayContrast"));
+            //WriteLog("Brightness and contrast reset", false);
 
             if ((_Pid != communicator.Pid) || (_Vid != communicator.Vid))
             {
@@ -182,14 +182,14 @@ namespace RotaryTable
                 _Vid = communicator.Vid;
                 PropertyChanged(this, new PropertyChangedEventArgs("VidTxt"));
                 PropertyChanged(this, new PropertyChangedEventArgs("PidTxt"));
-                WriteLog("PID/VID reset", false); 
+                WriteLog("PID/VID reset", false);
             }
             PropertyChanged(this, new PropertyChangedEventArgs("ActivityLogTxt"));
         }
 
         public void ResetCalibration()
         {
-            for(int i=0; i<_calibration.Length; ++i)
+            for (int i = 0; i < _calibration.Length; ++i)
             {
                 _calibration[i] = communicator.CalibrationValues[i];
                 _calibration_pending[i] = false;
@@ -215,16 +215,16 @@ namespace RotaryTable
             }
         }
 
-        public  void SaveCalibration()
+        public void SaveCalibration()
         {
             for (byte i = 0; i < _calibration.Length; ++i)
             {
-                if(_calibration_pending[i])
+                if (_calibration_pending[i])
                 {
                     communicator.SetCalibration(i, _calibration[i]);
                     _calibration_pending[i] = false;
                     WriteLog(string.Format("Calibration {0} set to {1}", i, _calibration[i]), false);
-                }    
+                }
             }
             //WriteLog("Calibration saved", false);
             if (PropertyChanged != null)
@@ -232,6 +232,187 @@ namespace RotaryTable
                 PropertyChanged(this, new PropertyChangedEventArgs("ActivityLogTxt"));
             }
         }
+
+        private void JumpDegrees(double degrees)
+        {
+            WriteLog(String.Format("Jump counter-clockwise by {0:0.000} degrees", degrees), false);
+            communicator.RequestJumpDegrees(degrees);
+            if (PropertyChanged != null)
+            {
+                PropertyChanged(this, new PropertyChangedEventArgs("ActivityLogTxt"));
+            }
+        }
+
+        public void Setup_Jump90CCW()
+        {
+            JumpDegrees(-90.0);
+        }
+
+        public void Setup_Jump90CW()
+        {
+            JumpDegrees(90.0);
+        }
+
+        public void Setup_Jump30CCW()
+        {
+            JumpDegrees(-30.0);
+        }
+
+        public void Setup_Jump30CW()
+        {
+            JumpDegrees(30.0);
+        }
+
+        public void Setup_Jump10CCW()
+        {
+            JumpDegrees(-10.0);
+        }
+
+        public void Setup_Jump10CW()
+        {
+            JumpDegrees(10.0);
+        }
+
+        public void Setup_Jump3CCW()
+        {
+            JumpDegrees(-3.0);
+        }
+
+        public void Setup_Jump3CW()
+        {
+            JumpDegrees(3.0);
+        }
+
+        public void Setup_Jump1CCW()
+        {
+            JumpDegrees(-1.0);
+        }
+
+        public void Setup_Jump1CW()
+        {
+            JumpDegrees(1.0);
+        }
+
+        public void Setup_Jump03CCW()
+        {
+            JumpDegrees(-0.3);
+        }
+
+        public void Setup_Jump03CW()
+        {
+            JumpDegrees(0.3);
+        }
+
+        public void Setup_Jump01CCW()
+        {
+            JumpDegrees(-0.1);
+        }
+
+        public void Setup_Jump01CW()
+        {
+            JumpDegrees(0.1);
+        }
+
+        public void Setup_Jump003CCW()
+        {
+            JumpDegrees(-0.03);
+        }
+
+        public void Setup_Jump003CW()
+        {
+            JumpDegrees(0.03);
+        }
+
+        public void Setup_Jump001CCW()
+        {
+            JumpDegrees(-0.01);
+        }
+
+        public void Setup_Jump001CW()
+        {
+            JumpDegrees(0.01);
+        }
+
+        public void Setup_SetZeroCCW()
+        {
+            WriteLog("Set current position as zero (CCW)", false);
+            communicator.ScheduleCommand(new Communicator.UsbCommand((byte) Communicator.SimpleRequest.SetZeroPositionCCW));
+            if (PropertyChanged != null)
+            {
+                PropertyChanged(this, new PropertyChangedEventArgs("ActivityLogTxt"));
+            }
+        }
+
+        public void Setup_SetZeroCW()
+        {
+            WriteLog("Set current position as zero (CW)", false);
+            communicator.ScheduleCommand(new Communicator.UsbCommand((byte)Communicator.SimpleRequest.SetZeroPositionCW));
+            if (PropertyChanged != null)
+            {
+                PropertyChanged(this, new PropertyChangedEventArgs("ActivityLogTxt"));
+            }
+        }
+
+        public void MainMenu()
+        {
+            WriteLog("Entering main menu", false);
+            communicator.ScheduleCommand(new Communicator.UsbCommand((byte)Communicator.SimpleRequest.SelectModeMainMenu));
+            if (PropertyChanged != null)
+            {
+                PropertyChanged(this, new PropertyChangedEventArgs("ActivityLogTxt"));
+            }
+        }
+
+        public void MainMenu_Setup()
+        {
+            WriteLog("Entering Setup menu", false);
+            communicator.ScheduleCommand(new Communicator.UsbCommand((byte)Communicator.SimpleRequest.SelectModeSetup));
+            if (PropertyChanged != null)
+            {
+                PropertyChanged(this, new PropertyChangedEventArgs("ActivityLogTxt"));
+            }
+        }
+
+        public void MainMenu_Divide()
+        {
+            WriteLog("Entering Divide menu", false);
+            communicator.ScheduleCommand(new Communicator.UsbCommand((byte)Communicator.SimpleRequest.SelectModeDivide));
+            if (PropertyChanged != null)
+            {
+                PropertyChanged(this, new PropertyChangedEventArgs("ActivityLogTxt"));
+            }
+        }
+
+        public void MainMenu_Arc()
+        {
+            WriteLog("Entering Arc menu", false);
+            communicator.ScheduleCommand(new Communicator.UsbCommand((byte)Communicator.SimpleRequest.SelectModeArc));
+            if (PropertyChanged != null)
+            {
+                PropertyChanged(this, new PropertyChangedEventArgs("ActivityLogTxt"));
+            }
+        }
+
+        public void MainMenu_Manual()
+        {
+            WriteLog("Entering Manual menu", false);
+            communicator.ScheduleCommand(new Communicator.UsbCommand((byte)Communicator.SimpleRequest.SelectModeManual));
+            if (PropertyChanged != null)
+            {
+                PropertyChanged(this, new PropertyChangedEventArgs("ActivityLogTxt"));
+            }
+        }
+
+        public void MainMenu_Go2Zero()
+        {
+            WriteLog("Entering Go2Zero menu", false);
+            communicator.ScheduleCommand(new Communicator.UsbCommand((byte)Communicator.SimpleRequest.SelectModeGo2Zero));
+            if (PropertyChanged != null)
+            {
+                PropertyChanged(this, new PropertyChangedEventArgs("ActivityLogTxt"));
+            }
+        }
+
 
         public ICommand LeftEncoder_TurnLeftClick
         {
@@ -310,6 +491,206 @@ namespace RotaryTable
             get
             {
                 return new UiCommand(this.SaveCalibration, communicator.RequestValid);
+            }
+        }
+
+        public ICommand Setup_Jump90CCWClick
+        {
+            get
+            {
+                return new UiCommand(this.Setup_Jump90CCW, communicator.RequestValid);
+            }
+        }
+
+        public ICommand Setup_Jump90CWClick
+        {
+            get
+            {
+                return new UiCommand(this.Setup_Jump90CW, communicator.RequestValid);
+            }
+        }
+
+        public ICommand Setup_Jump30CCWClick
+        {
+            get
+            {
+                return new UiCommand(this.Setup_Jump30CCW, communicator.RequestValid);
+            }
+        }
+
+        public ICommand Setup_Jump30CWClick
+        {
+            get
+            {
+                return new UiCommand(this.Setup_Jump30CW, communicator.RequestValid);
+            }
+        }
+
+        public ICommand Setup_Jump10CCWClick
+        {
+            get
+            {
+                return new UiCommand(this.Setup_Jump10CCW, communicator.RequestValid);
+            }
+        }
+
+        public ICommand Setup_Jump10CWClick
+        {
+            get
+            {
+                return new UiCommand(this.Setup_Jump10CW, communicator.RequestValid);
+            }
+        }
+
+        public ICommand Setup_Jump3CCWClick
+        {
+            get
+            {
+                return new UiCommand(this.Setup_Jump3CCW, communicator.RequestValid);
+            }
+        }
+
+        public ICommand Setup_Jump3CWClick
+        {
+            get
+            {
+                return new UiCommand(this.Setup_Jump3CW, communicator.RequestValid);
+            }
+        }
+
+        public ICommand Setup_Jump1CCWClick
+        {
+            get
+            {
+                return new UiCommand(this.Setup_Jump1CCW, communicator.RequestValid);
+            }
+        }
+
+        public ICommand Setup_Jump1CWClick
+        {
+            get
+            {
+                return new UiCommand(this.Setup_Jump1CW, communicator.RequestValid);
+            }
+        }
+
+        public ICommand Setup_Jump03CCWClick
+        {
+            get
+            {
+                return new UiCommand(this.Setup_Jump03CCW, communicator.RequestValid);
+            }
+        }
+
+        public ICommand Setup_Jump03CWClick
+        {
+            get
+            {
+                return new UiCommand(this.Setup_Jump03CW, communicator.RequestValid);
+            }
+        }
+
+        public ICommand Setup_Jump01CCWClick
+        {
+            get
+            {
+                return new UiCommand(this.Setup_Jump01CCW, communicator.RequestValid);
+            }
+        }
+
+        public ICommand Setup_Jump01CWClick
+        {
+            get
+            {
+                return new UiCommand(this.Setup_Jump01CW, communicator.RequestValid);
+            }
+        }
+
+        public ICommand Setup_Jump003CCWClick
+        {
+            get
+            {
+                return new UiCommand(this.Setup_Jump003CCW, communicator.RequestValid);
+            }
+        }
+
+        public ICommand Setup_Jump003CWClick
+        {
+            get
+            {
+                return new UiCommand(this.Setup_Jump003CW, communicator.RequestValid);
+            }
+        }
+
+        public ICommand Setup_Jump001CCWClick
+        {
+            get
+            {
+                return new UiCommand(this.Setup_Jump001CCW, communicator.RequestValid);
+            }
+        }
+
+        public ICommand Setup_Jump001CWClick
+        {
+            get
+            {
+                return new UiCommand(this.Setup_Jump001CW, communicator.RequestValid);
+            }
+        }
+
+        public ICommand Setup_SetZeroCCWClick
+        {
+            get
+            {
+                return new UiCommand(this.Setup_SetZeroCCW, communicator.RequestValid);
+            }
+        }
+
+        public ICommand Setup_SetZeroCWClick
+        {
+            get
+            {
+                return new UiCommand(this.Setup_SetZeroCW, communicator.RequestValid);
+            }
+        }
+
+        public ICommand MainMenu_SetupClick
+        {
+            get
+            {
+                return new UiCommand(this.MainMenu_Setup, communicator.RequestValid);
+            }
+        }
+
+        public ICommand MainMenu_DivideClick
+        {
+            get
+            {
+                return new UiCommand(this.MainMenu_Divide, communicator.RequestValid);
+            }
+        }
+
+        public ICommand MainMenu_ArcClick
+        {
+            get
+            {
+                return new UiCommand(this.MainMenu_Arc, communicator.RequestValid);
+            }
+        }
+
+        public ICommand MainMenu_ManualClick
+        {
+            get
+            {
+                return new UiCommand(this.MainMenu_Manual, communicator.RequestValid);
+            }
+        }
+
+        public ICommand MainMenu_Go2ZeroClick
+        {
+            get
+            {
+                return new UiCommand(this.MainMenu_Go2Zero, communicator.RequestValid);
             }
         }
 
@@ -455,7 +836,12 @@ namespace RotaryTable
         {
             get
             {
-                return ("Fimware " + communicator.FirmwareMajor).ToString() + "." + (communicator.FirmwareMinor).ToString() + "." + (communicator.FirmwareFix).ToString();
+                if (communicator.HidUtil.ConnectionStatus != HidUtility.UsbConnectionStatus.Connected)
+                    return "";
+                else
+                {
+                    return ("Fimware " + communicator.FirmwareMajor).ToString() + "." + (communicator.FirmwareMinor).ToString() + "." + (communicator.FirmwareFix).ToString();
+                }
             }
         }
 

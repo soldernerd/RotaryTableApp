@@ -227,14 +227,20 @@
                     <Button Name="Setup_Jump001CW" Grid.Column="1" Grid.Row="8" Margin="10,3,10,3" Content="Move 0.01° Clockwise"
                         Command="{Binding Setup_Jump001CWClick, Source={StaticResource CommunicatorVM}}"
                         IsEnabled="{Binding UserInterfaceEnabled, Source={StaticResource CommunicatorVM}}"/>
+                    <Button Name="setup_SetZeroCCW" Grid.Column="2" Grid.Row="0" Grid.RowSpan="4" Margin="10,3,10,3" Content="Set current position\nas new Zero Reference\n(Counter-Clockwise)"
+                        Command="{Binding Setup_SetZeroCCWClick, Source={StaticResource CommunicatorVM}}"
+                        IsEnabled="{Binding UserInterfaceEnabled, Source={StaticResource CommunicatorVM}}"/>
+                    <Button Name="setup_SetZeroCW" Grid.Column="2" Grid.Row="4" Grid.RowSpan="4" Margin="10,3,10,3" Content="Set current position\mas new Zero Reference\n(Clockwise)"
+                        Command="{Binding Setup_SetZeroCWClick, Source={StaticResource CommunicatorVM}}"
+                        IsEnabled="{Binding UserInterfaceEnabled, Source={StaticResource CommunicatorVM}}"/>
                 </Grid>
             </TabItem>
 
-            <TabItem Header="Divide" IsEnabled="True">
+            <TabItem Header="Divide">
                 <Label Content="divide content"/>
             </TabItem>
 
-            <TabItem Header="Arc" IsSelected="True">
+            <TabItem Header="Arc">
                 <Label Content="arc content"/>
             </TabItem>
 
