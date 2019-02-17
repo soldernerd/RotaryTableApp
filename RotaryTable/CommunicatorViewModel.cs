@@ -957,17 +957,19 @@ namespace RotaryTable
                     string s = "Full circle in steps: {0}" + System.Environment.NewLine
                         + "Inverse direction: {1}" + System.Environment.NewLine
                         + "Overshoot in steps: {2}" + System.Environment.NewLine
-                        + "Minimum speed: {3}" + System.Environment.NewLine
-                        + "Maximum speed: {4}" + System.Environment.NewLine
-                        + "Initial speed arc: {5}" + System.Environment.NewLine
-                        + "Maximum speed arc: {6}" + System.Environment.NewLine
-                        + "Initial speed manual: {7}" + System.Environment.NewLine
-                        + "Maximum speed manual: {8}" + System.Environment.NewLine
-                        + "Beep duration: {9}" + System.Environment.NewLine;
+                        + "Overshoot cost in steps: {3}" + System.Environment.NewLine
+                        + "Minimum speed: {4}" + System.Environment.NewLine
+                        + "Maximum speed: {5}" + System.Environment.NewLine
+                        + "Initial speed arc: {6}" + System.Environment.NewLine
+                        + "Maximum speed arc: {7}" + System.Environment.NewLine
+                        + "Initial speed manual: {8}" + System.Environment.NewLine
+                        + "Maximum speed manual: {9}" + System.Environment.NewLine
+                        + "Beep duration: {10}" + System.Environment.NewLine;
                     return String.Format(s,
                         communicator.DeviceConfig_FullCircleInSteps,
                         byte_to_bool(communicator.DeviceConfig_InverseDirection),
                         communicator.DeviceConfig_OvershootInSteps,
+                        communicator.DeviceConfig_OvershootCostInSteps,
                         communicator.DeviceConfig_MinimumSpeed,
                         communicator.DeviceConfig_MaximumSpeed,
                         communicator.DeviceConfig_InitialSpeedArc,

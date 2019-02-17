@@ -62,6 +62,7 @@ namespace RotaryTable
         public UInt32 DeviceConfig_FullCircleInSteps { get; private set; }
         public byte DeviceConfig_InverseDirection { get; private set; }
         public UInt16 DeviceConfig_OvershootInSteps { get; private set; }
+        public UInt16 DeviceConfig_OvershootCostInSteps { get; private set; }
         public UInt16 DeviceConfig_MinimumSpeed { get; private set; }
         public UInt16 DeviceConfig_MaximumSpeed { get; private set; }
         public UInt16 DeviceConfig_InitialSpeedArc { get; private set; }
@@ -234,9 +235,10 @@ namespace RotaryTable
             DeviceStatus_BrakeOn = InBuffer.buffer[29];
             DeviceStatus_Busy = InBuffer.buffer[30];
 
-            //44-47:    uint32_t full_circle_in_steps
-            //48:       uint8_t inverse_direction
-            //49-50:    uint16_t overshoot_in_steps
+            //42-45:    uint32_t full_circle_in_steps
+            //46:       uint8_t inverse_direction
+            //47-48:    uint16_t overshoot_in_steps
+            //49-50:    uint16_t overshoot_cost_in_steps
             //51-52:    uint16_t minimum_speed
             //53-54:    uint16_t maximum_speed
             //55-56:    uint16_t initial_speed_arc
@@ -244,9 +246,10 @@ namespace RotaryTable
             //59-60:    uint16_t initial_speed_manual
             //61-62:    uint16_t maximum_speed_manual
             //63:       uint8_t beep_duration
-            DeviceConfig_FullCircleInSteps = BitConverter.ToUInt32(InBuffer.buffer, 45);
-            DeviceConfig_InverseDirection = InBuffer.buffer[49];
-            DeviceConfig_OvershootInSteps = BitConverter.ToUInt16(InBuffer.buffer, 50);
+            DeviceConfig_FullCircleInSteps = BitConverter.ToUInt32(InBuffer.buffer, 43);
+            DeviceConfig_InverseDirection = InBuffer.buffer[45];
+            DeviceConfig_OvershootInSteps = BitConverter.ToUInt16(InBuffer.buffer, 48);
+            DeviceConfig_OvershootCostInSteps = BitConverter.ToUInt16(InBuffer.buffer, 50);
             DeviceConfig_MinimumSpeed = BitConverter.ToUInt16(InBuffer.buffer, 52);
             DeviceConfig_MaximumSpeed = BitConverter.ToUInt16(InBuffer.buffer, 54);
             DeviceConfig_InitialSpeedArc = BitConverter.ToUInt16(InBuffer.buffer, 56);

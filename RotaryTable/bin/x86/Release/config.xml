@@ -4,9 +4,9 @@
     <ProductId>0xEDCF</ProductId>
   </Device>
   <Window>
-    <PositionX>2777</PositionX>
-    <PositionY>161</PositionY>
+    <PositionX>867</PositionX>
+    <PositionY>201</PositionY>
     <ActivityLog>Visible</ActivityLog>
-    <ConnectionDetails>Collapsed</ConnectionDetails>
+    <ConnectionDetails>Visible</ConnectionDetails>
   </Window>
 </Config>
