@@ -104,8 +104,10 @@ namespace ConfigurationFile
             tags.Add(new Tag("Config/Device/ProductId", "0xEDCF"));
             tags.Add(new Tag("Config/Window/PositionX", "100"));
             tags.Add(new Tag("Config/Window/PositionY", "100"));
-            tags.Add(new Tag("/Config/Window/ActivityLog", "Visible"));
-            tags.Add(new Tag("/Config/Window/ConnectionDetails", "Visible"));
+            tags.Add(new Tag("/Config/Window/Status", "Visible"));
+            tags.Add(new Tag("/Config/Window/MainControl", "Visible"));
+            tags.Add(new Tag("/Config/Window/ActivityLog", "Collapsed"));
+            tags.Add(new Tag("/Config/Window/ConnectionDetails", "Collapsed"));
 
             foreach(Tag tag in tags)
             {
@@ -207,6 +209,18 @@ namespace ConfigurationFile
         private void _setVisibility(string path, bool value)
         {
             _setBool(path, value, "Visible", "Collapsed");
+        }
+
+        public bool StatusVisible
+        {
+            get { return _getVisibility("/Config/Window/Status"); }
+            set { _setVisibility("/Config/Window/Status", value); }
+        }
+
+        public bool MainControlVisible
+        {
+            get { return _getVisibility("/Config/Window/MainControl"); }
+            set { _setVisibility("/Config/Window/MainControl", value); }
         }
 
         public bool ActivityLogVisible

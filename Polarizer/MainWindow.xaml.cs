@@ -93,9 +93,12 @@ namespace RotaryTable
             MenuItem item = (MenuItem)sender;
             switch (item.Name)
             {
-                case "MenuItem_FirstRow":
+                case "MenuItem_Status":
                     ExpandCollapseGroupBox(this.Status_GroupBox);
                     ExpandCollapseGroupBox(this.UserInterface_GroupBox);
+                    break;
+                case "MenuItem_MainControl":
+                    ExpandCollapseGroupBox(this.MainControl_GroupBox);
                     break;
                 case "MenuItem_ActivityLog":
                     ExpandCollapseGroupBox(this.ActivityLogging_GroupBox);

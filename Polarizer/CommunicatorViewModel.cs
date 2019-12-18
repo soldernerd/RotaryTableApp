@@ -243,94 +243,35 @@ namespace RotaryTable
             }
         }
 
-        public void Setup_Jump90CCW()
-        {
-            JumpDegrees(-90.0);
-        }
-
-        public void Setup_Jump90CW()
-        {
-            JumpDegrees(90.0);
-        }
-
-        public void Setup_Jump30CCW()
+        public void Jump30CCW()
         {
             JumpDegrees(-30.0);
         }
 
-        public void Setup_Jump30CW()
+        public void Jump30CW()
         {
             JumpDegrees(30.0);
         }
 
-        public void Setup_Jump10CCW()
+        public void Jump10CCW()
         {
             JumpDegrees(-10.0);
         }
 
-        public void Setup_Jump10CW()
+        public void Jump10CW()
         {
             JumpDegrees(10.0);
         }
 
-        public void Setup_Jump3CCW()
-        {
-            JumpDegrees(-3.0);
-        }
 
-        public void Setup_Jump3CW()
+        public void JumpZero()
         {
-            JumpDegrees(3.0);
-        }
-
-        public void Setup_Jump1CCW()
-        {
-            JumpDegrees(-1.0);
-        }
-
-        public void Setup_Jump1CW()
-        {
-            JumpDegrees(1.0);
-        }
-
-        public void Setup_Jump03CCW()
-        {
-            JumpDegrees(-0.3);
-        }
-
-        public void Setup_Jump03CW()
-        {
-            JumpDegrees(0.3);
-        }
-
-        public void Setup_Jump01CCW()
-        {
-            JumpDegrees(-0.1);
-        }
-
-        public void Setup_Jump01CW()
-        {
-            JumpDegrees(0.1);
-        }
-
-        public void Setup_Jump003CCW()
-        {
-            JumpDegrees(-0.03);
-        }
-
-        public void Setup_Jump003CW()
-        {
-            JumpDegrees(0.03);
-        }
-
-        public void Setup_Jump001CCW()
-        {
-            JumpDegrees(-0.01);
-        }
-
-        public void Setup_Jump001CW()
-        {
-            JumpDegrees(0.01);
+            double RelativePosition = 360.0 * (double)communicator.DeviceStatus_CurrentPositionInSteps / (double)communicator.DeviceConfig_FullCircleInSteps;
+            if (RelativePosition>180.0)
+            {
+                RelativePosition -= 360.0;
+            }
+            JumpDegrees(-RelativePosition);
         }
 
         public void Setup_SetZeroCCW()
@@ -494,147 +435,43 @@ namespace RotaryTable
             }
         }
 
-        public ICommand Setup_Jump90CCWClick
+        public ICommand Jump30CCWClick
         {
             get
             {
-                return new UiCommand(this.Setup_Jump90CCW, communicator.RequestValid);
+                return new UiCommand(this.Jump30CCW, communicator.RequestValid);
             }
         }
 
-        public ICommand Setup_Jump90CWClick
+        public ICommand Jump30CWClick
         {
             get
             {
-                return new UiCommand(this.Setup_Jump90CW, communicator.RequestValid);
+                return new UiCommand(this.Jump30CW, communicator.RequestValid);
             }
         }
 
-        public ICommand Setup_Jump30CCWClick
+        public ICommand Jump10CCWClick
         {
             get
             {
-                return new UiCommand(this.Setup_Jump30CCW, communicator.RequestValid);
+                return new UiCommand(this.Jump10CCW, communicator.RequestValid);
             }
         }
 
-        public ICommand Setup_Jump30CWClick
+        public ICommand Jump10CWClick
         {
             get
             {
-                return new UiCommand(this.Setup_Jump30CW, communicator.RequestValid);
+                return new UiCommand(this.Jump10CW, communicator.RequestValid);
             }
         }
 
-        public ICommand Setup_Jump10CCWClick
+        public ICommand JumpZeroClick
         {
             get
             {
-                return new UiCommand(this.Setup_Jump10CCW, communicator.RequestValid);
-            }
-        }
-
-        public ICommand Setup_Jump10CWClick
-        {
-            get
-            {
-                return new UiCommand(this.Setup_Jump10CW, communicator.RequestValid);
-            }
-        }
-
-        public ICommand Setup_Jump3CCWClick
-        {
-            get
-            {
-                return new UiCommand(this.Setup_Jump3CCW, communicator.RequestValid);
-            }
-        }
-
-        public ICommand Setup_Jump3CWClick
-        {
-            get
-            {
-                return new UiCommand(this.Setup_Jump3CW, communicator.RequestValid);
-            }
-        }
-
-        public ICommand Setup_Jump1CCWClick
-        {
-            get
-            {
-                return new UiCommand(this.Setup_Jump1CCW, communicator.RequestValid);
-            }
-        }
-
-        public ICommand Setup_Jump1CWClick
-        {
-            get
-            {
-                return new UiCommand(this.Setup_Jump1CW, communicator.RequestValid);
-            }
-        }
-
-        public ICommand Setup_Jump03CCWClick
-        {
-            get
-            {
-                return new UiCommand(this.Setup_Jump03CCW, communicator.RequestValid);
-            }
-        }
-
-        public ICommand Setup_Jump03CWClick
-        {
-            get
-            {
-                return new UiCommand(this.Setup_Jump03CW, communicator.RequestValid);
-            }
-        }
-
-        public ICommand Setup_Jump01CCWClick
-        {
-            get
-            {
-                return new UiCommand(this.Setup_Jump01CCW, communicator.RequestValid);
-            }
-        }
-
-        public ICommand Setup_Jump01CWClick
-        {
-            get
-            {
-                return new UiCommand(this.Setup_Jump01CW, communicator.RequestValid);
-            }
-        }
-
-        public ICommand Setup_Jump003CCWClick
-        {
-            get
-            {
-                return new UiCommand(this.Setup_Jump003CCW, communicator.RequestValid);
-            }
-        }
-
-        public ICommand Setup_Jump003CWClick
-        {
-            get
-            {
-                return new UiCommand(this.Setup_Jump003CW, communicator.RequestValid);
-            }
-        }
-
-        public ICommand Setup_Jump001CCWClick
-        {
-            get
-            {
-                return new UiCommand(this.Setup_Jump001CCW, communicator.RequestValid);
-            }
-        }
-
-        public ICommand Setup_Jump001CWClick
-        {
-            get
-            {
-                return new UiCommand(this.Setup_Jump001CW, communicator.RequestValid);
+                return new UiCommand(this.JumpZero, communicator.RequestValid);
             }
         }
 
@@ -837,7 +674,7 @@ namespace RotaryTable
             get
             {
                 if (communicator.HidUtil.ConnectionStatus != HidUtility.UsbConnectionStatus.Connected)
-                    return "";
+                    return "Not connected";
                 else
                 {
                     return ("Fimware " + communicator.FirmwareMajor).ToString() + "." + (communicator.FirmwareMinor).ToString() + "." + (communicator.FirmwareFix).ToString();
@@ -850,14 +687,15 @@ namespace RotaryTable
             get
             {
                 if (communicator.HidUtil.ConnectionStatus != HidUtility.UsbConnectionStatus.Connected)
-                    return "Not connected";
+                    return "- - -";
                 else
                 {
                     double position = 360.0 * (double)communicator.DeviceStatus_CurrentPositionInSteps / (double)communicator.DeviceConfig_FullCircleInSteps;
-                    int degrees = (int)position;
-                    int minutes = (int)(60 * (position - degrees));
-                    int seconds = (int)(3600 * (position - degrees) - 60 * minutes);
-                    return string.Format("{0:0.000}° = {1}°{2}'{3}''", position, degrees, minutes, seconds);
+                    if(position>180.0)
+                    {
+                        position -= 360.0;
+                    }
+                    return string.Format("{0:0.000}°", position);
                 }
             }   
         }
@@ -1142,6 +980,42 @@ namespace RotaryTable
                     }
                 }
                 return "RX Speed: n/a";
+            }
+        }
+
+        public string StatusVisibility
+        {
+            get
+            {
+                if (config.StatusVisible)
+                    return "Visible";
+                else
+                    return "Collapsed";
+            }
+            set
+            {
+                if (value == "Visible")
+                    config.StatusVisible = true;
+                else
+                    config.StatusVisible = false;
+            }
+        }
+
+        public string MainControlVisibility
+        {
+            get
+            {
+                if (config.MainControlVisible)
+                    return "Visible";
+                else
+                    return "Collapsed";
+            }
+            set
+            {
+                if (value == "Visible")
+                    config.MainControlVisible = true;
+                else
+                    config.MainControlVisible = false;
             }
         }
 

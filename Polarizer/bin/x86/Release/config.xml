@@ -6,7 +6,9 @@
   <Window>
     <PositionX>850</PositionX>
     <PositionY>291</PositionY>
-    <ActivityLog>Visible</ActivityLog>
-    <ConnectionDetails>Visible</ConnectionDetails>
+    <ActivityLog>Collapsed</ActivityLog>
+    <ConnectionDetails>Collapsed</ConnectionDetails>
+    <Status>Visible</Status>
+    <MainControl>Visible</MainControl>
   </Window>
 </Config>

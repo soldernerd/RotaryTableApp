@@ -34,7 +34,8 @@
         <!-- Row 0: Main Menu -->
         <Menu IsMainMenu="True" Name="menu" Height="20" Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="4" HorizontalAlignment="Left" VerticalAlignment="Top" Visibility="Visible">
             <MenuItem Header="View">
-                <MenuItem Header="First Row" Name="MenuItem_FirstRow" Click="ExpandCollapse"></MenuItem>
+                <MenuItem Header="Status" Name="MenuItem_Status" Click="ExpandCollapse"></MenuItem>
+                <MenuItem Header="Main Control" Name="MenuItem_MainControl" Click="ExpandCollapse"></MenuItem>
                 <MenuItem Header="Activity Log" Name="MenuItem_ActivityLog" Click="ExpandCollapse"></MenuItem>
                 <MenuItem Header="Connection Details" Name="MenuItem_ConnectionDetail" Click="ExpandCollapse"></MenuItem>
             </MenuItem>
@@ -44,7 +45,7 @@
 
         <!-- Row 1 , position, temperature, fan, brake-->
         <GroupBox Header="Status" Name="Status_GroupBox" Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="1" Margin="10,10,10,10" 
-            Visibility="{Binding FirstRowVisibility, Mode=TwoWay, Source={StaticResource CommunicatorVM}}" Height="190">
+            Visibility="{Binding StatusVisibility, Mode=TwoWay, Source={StaticResource CommunicatorVM}}" Height="190">
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="1*" />
@@ -58,9 +59,10 @@
                     <RowDefinition Height="1*" />
                 </Grid.RowDefinitions>
 
-                <TextBlock Name="Position" Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="1" Margin="10,10,10,1" FontSize="24" FontWeight="Bold"
-                Text="{Binding PositionTxt, Mode=OneWay, Source={StaticResource CommunicatorVM}}"/>
+                <TextBlock Name="Position" Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="1" Margin="10,10,10,1" FontSize="48" FontWeight="Bold"
+                           Grid.RowSpan="2" Text="{Binding PositionTxt, Mode=OneWay, Source={StaticResource CommunicatorVM}}"/>
 
+                <!--
                 <TextBlock Name="TemperatureInternal" Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="1" Margin="10,1,10,1"
                 Text="{Binding TemperatureInternalTxt, Mode=OneWay, Source={StaticResource CommunicatorVM}}"/>
 
@@ -72,6 +74,7 @@
 
                 <TextBlock Name="Brake" Grid.Column="0" Grid.Row="4" Grid.ColumnSpan="1" Margin="10,1,10,1"
                 Text="{Binding BrakeTxt, Mode=OneWay, Source={StaticResource CommunicatorVM}}"/>
+                -->
 
                 <TextBlock Name="Version" Grid.Column="0" Grid.Row="5" Grid.ColumnSpan="1" Margin="10,1,10,1"
                 Text="{Binding FirmwareVersionTxt, Mode=OneWay, Source={StaticResource CommunicatorVM}}"/>
@@ -82,7 +85,7 @@
 
         <!-- Row 1 , display and rotary encoders-->
         <GroupBox Header="User Interface" Name="UserInterface_GroupBox" Grid.Column="1" Grid.Row="1" Grid.ColumnSpan="1" Margin="10,10,10,10" 
-            Visibility="{Binding FirstRowVisibility, Mode=TwoWay, Source={StaticResource CommunicatorVM}}" Height="190">
+            Visibility="{Binding StatusVisibility, Mode=TwoWay, Source={StaticResource CommunicatorVM}}" Height="190">
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="3*" />
@@ -126,7 +129,8 @@
         </GroupBox>
 
         <!-- Row 2 , Main controls -->
-        <GroupBox Header="Main Control" Name="MainControl_GroupBox" Grid.Column="0" Grid.Row="2" Grid.ColumnSpan="2" Margin="10,10,10,10" Height="150">
+        <GroupBox Header="Main Control" Name="MainControl_GroupBox" Grid.Column="0" Grid.Row="2" Grid.ColumnSpan="2" Margin="10,10,10,10" 
+            Visibility="{Binding MainControlVisibility, Mode=TwoWay, Source={StaticResource CommunicatorVM}}" Height="150">
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="1*" />
@@ -157,24 +161,24 @@
                     IsEnabled="{Binding UserInterfaceEnabled, Source={StaticResource CommunicatorVM}}"/>
 
 
-                <Button Name="Setup_Jump30CCW" Grid.Column="0" Grid.Row="2" Margin="5,5,5,5" Content="&lt; 30°"
-                        Command="{Binding Setup_Jump30CCWClick, Source={StaticResource CommunicatorVM}}"
+                <Button Name="Jump30CCW" Grid.Column="0" Grid.Row="2" Margin="5,5,5,5" Content="&lt; 30°"
+                        Command="{Binding Jump30CCWClick, Source={StaticResource CommunicatorVM}}"
                         IsEnabled="{Binding UserInterfaceEnabled, Source={StaticResource CommunicatorVM}}"/>
 
-                <Button Name="Setup_Jump10CCW" Grid.Column="1" Grid.Row="2" Margin="5,5,5,5" Content="&lt; 10°"
-                        Command="{Binding Setup_Jump10CCWClick, Source={StaticResource CommunicatorVM}}"
+                <Button Name="Jump10CCW" Grid.Column="1" Grid.Row="2" Margin="5,5,5,5" Content="&lt; 10°"
+                        Command="{Binding Jump10CCWClick, Source={StaticResource CommunicatorVM}}"
                         IsEnabled="{Binding UserInterfaceEnabled, Source={StaticResource CommunicatorVM}}"/>
 
-                <Button Name="Setup_JumpZero" Grid.Column="2" Grid.Row="2" Margin="5,5,5,5" Content="Go to zero"
-                        Command="{Binding Setup_JumpZeroClick, Source={StaticResource CommunicatorVM}}"
+                <Button Name="JumpZero" Grid.Column="2" Grid.Row="2" Margin="5,5,5,5" Content="Go to zero"
+                        Command="{Binding JumpZeroClick, Source={StaticResource CommunicatorVM}}"
                         IsEnabled="{Binding UserInterfaceEnabled, Source={StaticResource CommunicatorVM}}"/>
 
-                <Button Name="Setup_Jump10CW" Grid.Column="3" Grid.Row="2" Margin="5,5,5,5" Content="10° &gt;"
-                        Command="{Binding Setup_Jump10CWClick, Source={StaticResource CommunicatorVM}}"
+                <Button Name="Jump10CW" Grid.Column="3" Grid.Row="2" Margin="5,5,5,5" Content="10° &gt;"
+                        Command="{Binding Jump10CWClick, Source={StaticResource CommunicatorVM}}"
                         IsEnabled="{Binding UserInterfaceEnabled, Source={StaticResource CommunicatorVM}}"/>
 
-                <Button Name="Setup_Jump30CW" Grid.Column="4" Grid.Row="2" Margin="5,5,5,5" Content="30° &gt;"
-                        Command="{Binding Setup_Jump30CWClick, Source={StaticResource CommunicatorVM}}"
+                <Button Name="Jump30CW" Grid.Column="4" Grid.Row="2" Margin="5,5,5,5" Content="30° &gt;"
+                        Command="{Binding Jump30CWClick, Source={StaticResource CommunicatorVM}}"
                         IsEnabled="{Binding UserInterfaceEnabled, Source={StaticResource CommunicatorVM}}"/>
 
             </Grid>
