@@ -167,5 +167,45 @@ namespace RotaryTable
             DeviceWin.WindowState = WindowState.Normal;
             DeviceWin.Focus();
         }
+
+        private void menu_window_zero(object sender, EventArgs e)
+        {
+            MessageBoxResult messageBoxResult = System.Windows.MessageBox.Show("Set current position as new zero?", "Confirm", System.Windows.MessageBoxButton.YesNo);
+            if (messageBoxResult == MessageBoxResult.Yes)
+            {
+                CommunicatorViewModel viewModel = this.DataContext as CommunicatorViewModel;
+                if (viewModel != null)
+                {
+                    viewModel.SimpleReqest(Communicator.SimpleRequest.SetZeroPositionCW);
+                }
+            }
+        }
+
+        private void mouse_down(object sender, EventArgs e)
+        {
+            CommunicatorViewModel viewModel = this.DataContext as CommunicatorViewModel;
+            if (viewModel != null)
+            {
+                Button clickedButton = sender as Button;
+                if(clickedButton.Name== "ContinuousLeft_Button")
+                {
+                    viewModel.ContinuousLeft();
+                }
+                if (clickedButton.Name == "ContinuousRight_Button")
+                {
+                    viewModel.ContinuousRight();
+                }
+            }
+        }
+
+        private void mouse_up(object sender, EventArgs e)
+        {
+            CommunicatorViewModel viewModel = this.DataContext as CommunicatorViewModel;
+            if (viewModel != null)
+            {
+                viewModel.SimpleReqest(Communicator.SimpleRequest.StopMotorManual);
+            }
+        }
+
     }
 }

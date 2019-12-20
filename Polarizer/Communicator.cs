@@ -58,6 +58,7 @@ namespace RotaryTable
         public byte DeviceStatus_FanOn { get; private set; }
         public byte DeviceStatus_BrakeOn { get; private set; }
         public byte DeviceStatus_Busy { get; private set; }
+        private UInt16 DeviceStatus_ManualSpeed;
 
         public UInt32 DeviceConfig_FullCircleInSteps { get; private set; }
         public byte DeviceConfig_InverseDirection { get; private set; }
@@ -81,6 +82,18 @@ namespace RotaryTable
         public string DebugString { get; private set; }
         public bool NewDebugString { get; set; }
 
+        public UInt16 ManualSpeed
+        {
+            get
+            {
+                return DeviceStatus_ManualSpeed;
+            }
+            set
+            {
+                DeviceStatus_ManualSpeed = value;
+                PendingCommands.Add(new UsbCommand((byte)ExtendedRequest.SetManualSpeed, DeviceStatus_ManualSpeed));
+            }
+        }
 
 
         public class UsbCommand
@@ -108,6 +121,15 @@ namespace RotaryTable
                 this.data.Add(index);
                 byte[] val_bytes = BitConverter.GetBytes(value);
                 this.data.Add(val_bytes[2]);
+                this.data.Add(val_bytes[1]);
+                this.data.Add(val_bytes[0]);
+            }
+
+            public UsbCommand(byte command, UInt16 value)
+            {
+                this.command = command;
+                this.data = new List<byte>();
+                byte[] val_bytes = BitConverter.GetBytes(value);
                 this.data.Add(val_bytes[1]);
                 this.data.Add(val_bytes[0]);
             }
@@ -234,6 +256,7 @@ namespace RotaryTable
             DeviceStatus_FanOn = InBuffer.buffer[28];
             DeviceStatus_BrakeOn = InBuffer.buffer[29];
             DeviceStatus_Busy = InBuffer.buffer[30];
+            DeviceStatus_ManualSpeed = BitConverter.ToUInt16(InBuffer.buffer, 31);
 
             //42-45:    uint32_t full_circle_in_steps
             //46:       uint8_t inverse_direction
@@ -546,12 +569,29 @@ namespace RotaryTable
             SelectModeGo2Zero = 0x25,
             SetZeroPositionCCW = 0x26,
             SetZeroPositionCW = 0x27,
-            GoToZero = 0x28
+            GoToZero = 0x28,
+            RebootBootloaderMode = 0x21,
+            RebootNormalMode = 0x22,
+            LeftEncoderCCW = 0x30,
+            LeftEncoderCW = 0x31,
+            LeftEncoderPush = 0x32,
+            RightEncoderCCW = 0x33,
+            RightEncoderCW = 0x34,
+            RightEncoderPush = 0x35,
+            StartTurnManualCCW = 0x36,
+            StartTurnManualCW = 0x37,
+            StopMotorManual = 0x38
+        }
+
+        public void SendSimpleRequest(SimpleRequest request)
+        {
+            PendingCommands.Add(new UsbCommand((byte)request));
         }
 
         public enum ExtendedRequest : byte
         {
-            JumpSteps = 0x90
+            JumpSteps = 0x90,
+            SetManualSpeed = 0x91
         }
 
         public void RequestShort(ExtendedRequest request)

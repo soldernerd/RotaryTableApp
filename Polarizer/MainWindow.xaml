@@ -3,6 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
         xmlns:local="clr-namespace:RotaryTable"
         mc:Ignorable="d"
         Title="Polarizer Controller"
@@ -40,6 +41,7 @@
                 <MenuItem Header="Connection Details" Name="MenuItem_ConnectionDetail" Click="ExpandCollapse"></MenuItem>
             </MenuItem>
             <MenuItem Header="Device" Click="menu_window_device"/>
+            <MenuItem Header="Set Zero" Click="menu_window_zero"/>
             <MenuItem Header="_About"   Click="menu_window_about"/>
         </Menu>
 
@@ -75,6 +77,9 @@
                 <TextBlock Name="Brake" Grid.Column="0" Grid.Row="4" Grid.ColumnSpan="1" Margin="10,1,10,1"
                 Text="{Binding BrakeTxt, Mode=OneWay, Source={StaticResource CommunicatorVM}}"/>
                 -->
+
+                <TextBlock Name="Busy" Grid.Column="0" Grid.Row="4" Grid.ColumnSpan="1" Margin="10,1,10,1"
+                Text="{Binding BusyTxt, Mode=OneWay, Source={StaticResource CommunicatorVM}}"/>
 
                 <TextBlock Name="Version" Grid.Column="0" Grid.Row="5" Grid.ColumnSpan="1" Margin="10,1,10,1"
                 Text="{Binding FirmwareVersionTxt, Mode=OneWay, Source={StaticResource CommunicatorVM}}"/>
@@ -146,7 +151,7 @@
                 </Grid.RowDefinitions>
 
                 <Button Name="ContinuousLeft_Button" Grid.Column="0" Grid.Row="0" Grid.RowSpan="2" Margin="5,5,5,5"  Content="Turn left"
-                    Command="{Binding ContinuousLeftClick, Source={StaticResource CommunicatorVM}}"
+                    PreviewMouseDown="mouse_down" PreviewMouseUp="mouse_up"
                     IsEnabled="{Binding UserInterfaceEnabled, Source={StaticResource CommunicatorVM}}"/>
 
                 <TextBox  Name="Speed_TextBox" BorderThickness="0" Grid.Column="1" Grid.Row="0" Grid.ColumnSpan="3" Margin="5,5,5,5" 
@@ -154,12 +159,16 @@
                           Text="Speed"/>
 
                 <Slider Name="Speed_Slider" Grid.Column="1" Grid.Row="1" Grid.ColumnSpan="3" Margin="5,5,5,5" VerticalAlignment="Center"
-                    Maximum="100" TickPlacement="BottomRight" TickFrequency="5" />
+                    TickPlacement="BottomRight" TickFrequency="5"
+                    Minimum="{Binding ManualSpeedMinimum, Source={StaticResource CommunicatorVM}}" 
+                    Maximum="{Binding ManualSpeedMaximum, Source={StaticResource CommunicatorVM}}" 
+                    Value="{Binding ManualSpeed, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, Source={StaticResource CommunicatorVM}}"/>
 
                 <Button Name="ContinuousRight_Button" Grid.Column="4" Grid.Row="0" Grid.RowSpan="2" Margin="5,5,5,5" Content="Turn right"
-                    Command="{Binding ContinuousRightClick, Source={StaticResource CommunicatorVM}}"
-                    IsEnabled="{Binding UserInterfaceEnabled, Source={StaticResource CommunicatorVM}}"/>
-
+                    PreviewMouseDown="mouse_down" PreviewMouseUp="mouse_up"
+                    IsEnabled="{Binding UserInterfaceEnabled, Source={StaticResource CommunicatorVM}}">
+                </Button>
+                
 
                 <Button Name="Jump30CCW" Grid.Column="0" Grid.Row="2" Margin="5,5,5,5" Content="&lt; 30°"
                         Command="{Binding Jump30CCWClick, Source={StaticResource CommunicatorVM}}"
@@ -170,7 +179,7 @@
                         IsEnabled="{Binding UserInterfaceEnabled, Source={StaticResource CommunicatorVM}}"/>
 
                 <Button Name="JumpZero" Grid.Column="2" Grid.Row="2" Margin="5,5,5,5" Content="Go to zero"
-                        Command="{Binding JumpZeroClick, Source={StaticResource CommunicatorVM}}"
+                        Command="{Binding GoToZeroClick, Source={StaticResource CommunicatorVM}}"
                         IsEnabled="{Binding UserInterfaceEnabled, Source={StaticResource CommunicatorVM}}"/>
 
                 <Button Name="Jump10CW" Grid.Column="3" Grid.Row="2" Margin="5,5,5,5" Content="10° &gt;"

@@ -233,6 +233,16 @@ namespace RotaryTable
             }
         }
 
+        public void SimpleReqest(Communicator.SimpleRequest request)
+        {
+            WriteLog(String.Format("Request sent: {0}", request), false);
+            communicator.SendSimpleRequest(request);
+            if (PropertyChanged != null)
+            {
+                PropertyChanged(this, new PropertyChangedEventArgs("ActivityLogTxt"));
+            }
+        }
+
         private void JumpDegrees(double degrees)
         {
             WriteLog(String.Format("Jump counter-clockwise by {0:0.000} degrees", degrees), false);
@@ -263,21 +273,30 @@ namespace RotaryTable
             JumpDegrees(10.0);
         }
 
-
-        public void JumpZero()
+        public void GoToZero()
         {
-            double RelativePosition = 360.0 * (double)communicator.DeviceStatus_CurrentPositionInSteps / (double)communicator.DeviceConfig_FullCircleInSteps;
-            if (RelativePosition>180.0)
-            {
-                RelativePosition -= 360.0;
-            }
-            JumpDegrees(-RelativePosition);
+            SimpleReqest(Communicator.SimpleRequest.GoToZero);
+        }
+
+        public void ContinuousLeft()
+        {
+            SimpleReqest(Communicator.SimpleRequest.StartTurnManualCCW);
+        }
+
+        public void ContinuousRight()
+        {
+            SimpleReqest(Communicator.SimpleRequest.StartTurnManualCW);
+        }
+
+        public void MotorStop()
+        {
+            SimpleReqest(Communicator.SimpleRequest.StopMotorManual);
         }
 
         public void Setup_SetZeroCCW()
         {
             WriteLog("Set current position as zero (CCW)", false);
-            communicator.ScheduleCommand(new Communicator.UsbCommand((byte) Communicator.SimpleRequest.SetZeroPositionCCW));
+            communicator.ScheduleCommand(new Communicator.UsbCommand((byte)Communicator.SimpleRequest.SetZeroPositionCCW));
             if (PropertyChanged != null)
             {
                 PropertyChanged(this, new PropertyChangedEventArgs("ActivityLogTxt"));
@@ -467,11 +486,35 @@ namespace RotaryTable
             }
         }
 
-        public ICommand JumpZeroClick
+        public ICommand GoToZeroClick
         {
             get
             {
-                return new UiCommand(this.JumpZero, communicator.RequestValid);
+                return new UiCommand(this.GoToZero, communicator.RequestValid);
+            }
+        }
+
+        public ICommand ContinuousLeftClick
+        {
+            get
+            {
+                return new UiCommand(this.ContinuousLeft, communicator.RequestValid);
+            }
+        }
+
+        public ICommand ContinuousRightClick
+        {
+            get
+            {
+                return new UiCommand(this.ContinuousRight, communicator.RequestValid);
+            }
+        }
+
+        public ICommand ContinuousRightRelease
+        {
+            get
+            {
+                return new UiCommand(this.MotorStop, communicator.RequestValid);
             }
         }
 
@@ -542,6 +585,17 @@ namespace RotaryTable
             }
         }
 
+        public string MoveAllowed
+        {
+            get
+            {
+                if(communicator.DeviceStatus_Busy==0)
+                    return "True";
+                else
+                    return "False";
+            }
+        }
+
         public string UserInterfaceColor
         {
             get
@@ -584,7 +638,11 @@ namespace RotaryTable
                     PropertyChanged(this, new PropertyChangedEventArgs("FanTxt"));
                     PropertyChanged(this, new PropertyChangedEventArgs("BrakeTxt"));
                     PropertyChanged(this, new PropertyChangedEventArgs("FirmwareVersionTxt"));
+                    PropertyChanged(this, new PropertyChangedEventArgs("BusyTxt"));
                     PropertyChanged(this, new PropertyChangedEventArgs("DeviceConfigurationTxt"));
+                    PropertyChanged(this, new PropertyChangedEventArgs("MoveAllowed"));
+                    PropertyChanged(this, new PropertyChangedEventArgs("ManualSpeed"));
+
                     /*
                     PropertyChanged(this, new PropertyChangedEventArgs("Calibration00Txt"));
                     PropertyChanged(this, new PropertyChangedEventArgs("Calibration01Txt"));
@@ -664,8 +722,39 @@ namespace RotaryTable
                 PropertyChanged(this, new PropertyChangedEventArgs("FanTxt"));
                 PropertyChanged(this, new PropertyChangedEventArgs("BrakeTxt"));
                 PropertyChanged(this, new PropertyChangedEventArgs("FirmwareVersionTxt"));
+                PropertyChanged(this, new PropertyChangedEventArgs("BusyTxt"));
+                PropertyChanged(this, new PropertyChangedEventArgs("MoveAllowed"));
                 PropertyChanged(this, new PropertyChangedEventArgs("DeviceConfigurationTxt"));
-                
+                PropertyChanged(this, new PropertyChangedEventArgs("ManualSpeed"));
+
+            }
+        }
+
+        public int ManualSpeedMinimum
+        {
+            get
+            {
+                return communicator.DeviceConfig_MinimumSpeed;
+            }
+        }
+
+        public int ManualSpeedMaximum
+        {
+            get
+            {
+                return communicator.DeviceConfig_MaximumSpeedManual;
+            }
+        }
+
+        public int ManualSpeed
+        {
+            get
+            {
+                return communicator.ManualSpeed;
+            }
+            set
+            {
+                communicator.ManualSpeed = Convert.ToUInt16(value);
             }
         }
 
@@ -678,6 +767,19 @@ namespace RotaryTable
                 else
                 {
                     return ("Fimware " + communicator.FirmwareMajor).ToString() + "." + (communicator.FirmwareMinor).ToString() + "." + (communicator.FirmwareFix).ToString();
+                }
+            }
+        }
+
+        public string BusyTxt
+        {
+            get
+            {
+                if (communicator.DeviceStatus_Busy==0)
+                    return "";
+                else
+                {
+                    return "busy...";
                 }
             }
         }
