@@ -4,11 +4,11 @@
     <ProductId>0xEDCF</ProductId>
   </Device>
   <Window>
-    <PositionX>1081</PositionX>
-    <PositionY>242</PositionY>
-    <ActivityLog>Collapsed</ActivityLog>
-    <ConnectionDetails>Collapsed</ConnectionDetails>
+    <PositionX>1165</PositionX>
+    <PositionY>246</PositionY>
     <Status>Visible</Status>
     <MainControl>Visible</MainControl>
+    <ActivityLog>Collapsed</ActivityLog>
+    <ConnectionDetails>Collapsed</ConnectionDetails>
   </Window>
 </Config>

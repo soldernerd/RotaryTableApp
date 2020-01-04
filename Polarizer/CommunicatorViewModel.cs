@@ -245,7 +245,7 @@ namespace RotaryTable
 
         private void JumpDegrees(double degrees)
         {
-            WriteLog(String.Format("Jump counter-clockwise by {0:0.000} degrees", degrees), false);
+            WriteLog(String.Format("Jump by {0:0.000} degrees", degrees), false);
             communicator.RequestJumpDegrees(degrees);
             if (PropertyChanged != null)
             {
@@ -792,12 +792,13 @@ namespace RotaryTable
                     return "- - -";
                 else
                 {
-                    double position = 360.0 * (double)communicator.DeviceStatus_CurrentPositionInSteps / (double)communicator.DeviceConfig_FullCircleInSteps;
-                    if(position>180.0)
+                    //double position = 360.0 * (double)communicator.DeviceStatus_CurrentPositionInSteps / (double)communicator.DeviceConfig_FullCircleInSteps;
+                    double position = 0.01 * (double)communicator.DeviceStatus_CurrentPositionInDegrees;
+                    if (position>180.0)
                     {
                         position -= 360.0;
                     }
-                    return string.Format("{0:0.000}°", position);
+                    return string.Format("{0:0.00}°, {1}", position, communicator.DeviceStatus_AbsolutePosition);
                 }
             }   
         }

@@ -59,6 +59,7 @@ namespace RotaryTable
         public byte DeviceStatus_BrakeOn { get; private set; }
         public byte DeviceStatus_Busy { get; private set; }
         private UInt16 DeviceStatus_ManualSpeed;
+        public Int16 DeviceStatus_AbsolutePosition { get; private set; }
 
         public UInt32 DeviceConfig_FullCircleInSteps { get; private set; }
         public byte DeviceConfig_InverseDirection { get; private set; }
@@ -257,6 +258,7 @@ namespace RotaryTable
             DeviceStatus_BrakeOn = InBuffer.buffer[29];
             DeviceStatus_Busy = InBuffer.buffer[30];
             DeviceStatus_ManualSpeed = BitConverter.ToUInt16(InBuffer.buffer, 31);
+            DeviceStatus_AbsolutePosition = BitConverter.ToInt16(InBuffer.buffer, 33);
 
             //42-45:    uint32_t full_circle_in_steps
             //46:       uint8_t inverse_direction
@@ -553,10 +555,10 @@ namespace RotaryTable
         public void RequestJumpDegrees(double degrees)
         {
             //Calculate distance in steps
-            degrees *= this.DeviceConfig_FullCircleInSteps;
+            degrees *= (double) this.DeviceConfig_FullCircleInSteps;
             degrees /= 360.0;
-            Int32 distance_in_steps = (Int32)degrees;
-            PendingCommands.Add(new UsbCommand((byte) ExtendedRequest.JumpSteps, distance_in_steps));
+            Int32 distance_in_steps = (Int32)Math.Round(degrees, MidpointRounding.AwayFromZero);
+            PendingCommands.Add(new UsbCommand((byte) ExtendedRequest.JumpStepsWithOvershoot, distance_in_steps));
         }
 
         public enum SimpleRequest: byte
@@ -588,10 +590,16 @@ namespace RotaryTable
             PendingCommands.Add(new UsbCommand((byte)request));
         }
 
+        /*
+         *  0x90: Jump steps. Parameters: int32_t NumberOfSteps
+         *  0x91: Jump steps with overshoot. Parameters: int32_t NumberOfSteps
+         *  0x92: Set manual speed. Parameters: uint16_t NewSpeed
+         */
         public enum ExtendedRequest : byte
         {
             JumpSteps = 0x90,
-            SetManualSpeed = 0x91
+            JumpStepsWithOvershoot = 0x91,
+            SetManualSpeed = 0x92
         }
 
         public void RequestShort(ExtendedRequest request)
