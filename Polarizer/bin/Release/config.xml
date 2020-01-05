@@ -9,6 +9,6 @@
     <Status>Visible</Status>
     <MainControl>Visible</MainControl>
     <ActivityLog>Collapsed</ActivityLog>
-    <ConnectionDetails>Visible</ConnectionDetails>
+    <ConnectionDetails>Collapsed</ConnectionDetails>
   </Window>
 </Config>

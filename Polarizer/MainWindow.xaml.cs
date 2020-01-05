@@ -145,6 +145,38 @@ namespace RotaryTable
             }
         }
 
+        private void Restart(object sender, EventArgs e)
+        {
+            MenuItem item = (MenuItem)sender;
+            MessageBoxResult messageBoxResult;
+
+            switch (item.Name)
+            {
+                case "MenuItem_Restart":
+                    messageBoxResult = System.Windows.MessageBox.Show("Restart device in normal mode?", "Confirm", System.Windows.MessageBoxButton.YesNo);
+                    if (messageBoxResult == MessageBoxResult.Yes)
+                    {
+                        CommunicatorViewModel viewModel = this.DataContext as CommunicatorViewModel;
+                        if (viewModel != null)
+                        {
+                            viewModel.SimpleReqest(Communicator.SimpleRequest.RebootNormalMode);
+                        }
+                    }
+                    break;
+                case "MenuItem_RestartBootloader":
+                    messageBoxResult = System.Windows.MessageBox.Show("Restart device in bootloader mode?", "Confirm", System.Windows.MessageBoxButton.YesNo);
+                    if (messageBoxResult == MessageBoxResult.Yes)
+                    {
+                        CommunicatorViewModel viewModel = this.DataContext as CommunicatorViewModel;
+                        if (viewModel != null)
+                        {
+                            viewModel.SimpleReqest(Communicator.SimpleRequest.RebootBootloaderMode);
+                        }
+                    }
+                    break;
+            }
+        }
+
         // Update when focus is lost
         public void FocusLostHandler(object sender, EventArgs e)
         {
@@ -185,7 +217,7 @@ namespace RotaryTable
 
         private void menu_window_about(object sender, EventArgs e)
         {
-            MessageBox.Show("Lukas Fässler, 2019\n\nlfaessler@gmx.net\nVisit soldernerd.com for more information", "About Polarizer Controller");
+            MessageBox.Show("Lukas Fässler, 2020\n\nlfaessler@gmx.net\nVisit soldernerd.com for more information", "About Polarizer Controller");
         }
 
         private void menu_window_device(object sender, EventArgs e)

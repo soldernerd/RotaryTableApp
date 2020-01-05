@@ -45,6 +45,10 @@
                 <MenuItem Header="Clockwise" Name="MenuItem_CW" Click="SetZero"></MenuItem>
                 <MenuItem Header="Counter-Clockwise" Name="MenuItem_CCW" Click="SetZero"></MenuItem>
             </MenuItem>
+            <MenuItem Header="Restart">
+                <MenuItem Header="Restart device" Name="MenuItem_Restart" Click="Restart"></MenuItem>
+                <MenuItem Header="Restart device in bootloader mode" Name="MenuItem_RestartBootloader" Click="Restart"></MenuItem>
+            </MenuItem>
             <MenuItem Header="_About"   Click="menu_window_about"/>
         </Menu>
 
