@@ -113,6 +113,37 @@ namespace RotaryTable
         }
 
 
+        private void SetZero(object sender, EventArgs e)
+        {
+            MenuItem item = (MenuItem)sender;
+            MessageBoxResult messageBoxResult;
+
+            switch (item.Name)
+            {
+                case "MenuItem_CW":
+                    messageBoxResult = System.Windows.MessageBox.Show("Set current position as new zero (approach clockwise)?", "Confirm", System.Windows.MessageBoxButton.YesNo);
+                    if (messageBoxResult == MessageBoxResult.Yes)
+                    {
+                        CommunicatorViewModel viewModel = this.DataContext as CommunicatorViewModel;
+                        if (viewModel != null)
+                        {
+                            viewModel.SimpleReqest(Communicator.SimpleRequest.SetZeroPositionCW);
+                        }
+                    }
+                    break;
+                case "MenuItem_CCW":
+                    messageBoxResult = System.Windows.MessageBox.Show("Set current position as new zero (approach counter-clockwise)?", "Confirm", System.Windows.MessageBoxButton.YesNo);
+                    if (messageBoxResult == MessageBoxResult.Yes)
+                    {
+                        CommunicatorViewModel viewModel = this.DataContext as CommunicatorViewModel;
+                        if (viewModel != null)
+                        {
+                            viewModel.SimpleReqest(Communicator.SimpleRequest.SetZeroPositionCCW);
+                        }
+                    }
+                    break;
+            }
+        }
 
         // Update when focus is lost
         public void FocusLostHandler(object sender, EventArgs e)
@@ -166,19 +197,6 @@ namespace RotaryTable
             DeviceWin.Show();
             DeviceWin.WindowState = WindowState.Normal;
             DeviceWin.Focus();
-        }
-
-        private void menu_window_zero(object sender, EventArgs e)
-        {
-            MessageBoxResult messageBoxResult = System.Windows.MessageBox.Show("Set current position as new zero?", "Confirm", System.Windows.MessageBoxButton.YesNo);
-            if (messageBoxResult == MessageBoxResult.Yes)
-            {
-                CommunicatorViewModel viewModel = this.DataContext as CommunicatorViewModel;
-                if (viewModel != null)
-                {
-                    viewModel.SimpleReqest(Communicator.SimpleRequest.SetZeroPositionCW);
-                }
-            }
         }
 
         private void mouse_down(object sender, EventArgs e)

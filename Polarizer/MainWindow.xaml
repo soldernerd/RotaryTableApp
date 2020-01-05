@@ -41,7 +41,10 @@
                 <MenuItem Header="Connection Details" Name="MenuItem_ConnectionDetail" Click="ExpandCollapse"></MenuItem>
             </MenuItem>
             <MenuItem Header="Device" Click="menu_window_device"/>
-            <MenuItem Header="Set Zero" Click="menu_window_zero"/>
+            <MenuItem Header="Set Zero">
+                <MenuItem Header="Clockwise" Name="MenuItem_CW" Click="SetZero"></MenuItem>
+                <MenuItem Header="Counter-Clockwise" Name="MenuItem_CCW" Click="SetZero"></MenuItem>
+            </MenuItem>
             <MenuItem Header="_About"   Click="menu_window_about"/>
         </Menu>
 
