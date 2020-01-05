@@ -633,6 +633,7 @@ namespace RotaryTable
 
                     PropertyChanged(this, new PropertyChangedEventArgs("DisplayTxt"));
                     PropertyChanged(this, new PropertyChangedEventArgs("PositionTxt"));
+                    PropertyChanged(this, new PropertyChangedEventArgs("AbsolutePositionTxt"));
                     PropertyChanged(this, new PropertyChangedEventArgs("TemperatureInternalTxt"));
                     PropertyChanged(this, new PropertyChangedEventArgs("TemperatureExternalTxt"));
                     PropertyChanged(this, new PropertyChangedEventArgs("FanTxt"));
@@ -717,6 +718,7 @@ namespace RotaryTable
                 PropertyChanged(this, new PropertyChangedEventArgs("UserInterfaceEnabled"));
                 PropertyChanged(this, new PropertyChangedEventArgs("DisplayTxt"));
                 PropertyChanged(this, new PropertyChangedEventArgs("PositionTxt"));
+                PropertyChanged(this, new PropertyChangedEventArgs("AbsolutePositionTxt"));
                 PropertyChanged(this, new PropertyChangedEventArgs("TemperatureInternalTxt"));
                 PropertyChanged(this, new PropertyChangedEventArgs("TemperatureExternalTxt"));
                 PropertyChanged(this, new PropertyChangedEventArgs("FanTxt"));
@@ -798,9 +800,34 @@ namespace RotaryTable
                     {
                         position -= 360.0;
                     }
-                    return string.Format("{0:0.00}°, {1}", position, communicator.DeviceStatus_AbsolutePosition);
+                    //return string.Format("{0:0.00}°, {1}", position, communicator.DeviceStatus_AbsolutePosition);
+                    return string.Format("{0:0.00}°", position);
                 }
             }   
+        }
+
+        public string AbsolutePositionTxt
+        {
+            get
+            {
+                if (communicator.HidUtil.ConnectionStatus != HidUtility.UsbConnectionStatus.Connected)
+                    return "";
+                else
+                {
+                    double position = (double)communicator.DeviceStatus_AbsolutePosition;
+                    position *= 360.0;
+                    position += 0.01 * (double)communicator.DeviceStatus_CurrentPositionInDegrees;
+
+                    if (position < 0.0)
+                    {
+                        return string.Format("Absolute position: {0:0.00}° CCW of zero", -position);
+                    }
+                    else
+                    {
+                        return string.Format("Absolute position: {0:0.00}° CW of zero", position);
+                    }
+                }
+            }
         }
 
         public string TemperatureInternalTxt
