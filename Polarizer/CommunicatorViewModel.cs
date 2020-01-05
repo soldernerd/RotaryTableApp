@@ -796,7 +796,7 @@ namespace RotaryTable
                 {
                     //double position = 360.0 * (double)communicator.DeviceStatus_CurrentPositionInSteps / (double)communicator.DeviceConfig_FullCircleInSteps;
                     double position = 0.01 * (double)communicator.DeviceStatus_CurrentPositionInDegrees;
-                    if (position>180.0)
+                    if (communicator.DeviceConfig_PositionDisplay180==1 && position>180.0)
                     {
                         position -= 360.0;
                     }

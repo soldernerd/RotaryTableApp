@@ -61,6 +61,8 @@ namespace RotaryTable
         private UInt16 DeviceStatus_ManualSpeed;
         public Int16 DeviceStatus_AbsolutePosition { get; private set; }
 
+        public byte DeviceConfig_PositionDisplay180 { get; private set; }
+
         public UInt32 DeviceConfig_FullCircleInSteps { get; private set; }
         public byte DeviceConfig_InverseDirection { get; private set; }
         public UInt16 DeviceConfig_OvershootInSteps { get; private set; }
@@ -271,6 +273,8 @@ namespace RotaryTable
             //59-60:    uint16_t initial_speed_manual
             //61-62:    uint16_t maximum_speed_manual
             //63:       uint8_t beep_duration
+            DeviceConfig_PositionDisplay180 = (byte) InBuffer.buffer[35];
+
             DeviceConfig_FullCircleInSteps = BitConverter.ToUInt32(InBuffer.buffer, 43);
             DeviceConfig_InverseDirection = InBuffer.buffer[45];
             DeviceConfig_OvershootInSteps = BitConverter.ToUInt16(InBuffer.buffer, 48);
